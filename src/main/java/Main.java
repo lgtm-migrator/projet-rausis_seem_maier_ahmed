@@ -1,9 +1,13 @@
 import java.util.concurrent.Callable;
 
+import Subcommands.Build;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-@Command(name = "Main")
+@Command(name="Main", subcommands = {
+    Build.class,
+})
+
 public class Main implements Callable<Integer> {
 
     //Ajout de la sous-commande new
