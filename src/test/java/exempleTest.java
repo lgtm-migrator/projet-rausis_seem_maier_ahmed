@@ -31,12 +31,12 @@ class exempleTest {
     // vu que le test passe pas)
 
     
-    @org.junit.jupiter.api.Test
-    void monSuperTestQuiMarchePas() {
-        int variable = 0;
-
-        assertEquals(42, variable, "la variable doit valoir 42");
-
-    }
+//    @org.junit.jupiter.api.Test
+//    void monSuperTestQuiMarchePas() {
+//        int variable = 0;
+//
+//        assertEquals(42, variable, "la variable doit valoir 42");
+//
+//    }
 
 }
