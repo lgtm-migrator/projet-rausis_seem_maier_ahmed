@@ -30,12 +30,12 @@ class exempleTest {
     // (si on décomente le code ci-dessous, github va refuser de merge dans la branche principale
     // vu que le test passe pas)
     
-    @org.junit.jupiter.api.Test
-    void monSuperTestQuiMarchePas() {
-        int variable = 0;
-
-        assertEquals(42, variable, "la variable doit valoir 42");
-
-    }
+//    @org.junit.jupiter.api.Test
+//    void monSuperTestQuiMarchePas() {
+//        int variable = 0;
+//
+//        assertEquals(42, variable, "la variable doit valoir 42");
+//
+//    }
 
 }
