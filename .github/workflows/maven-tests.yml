@@ -1,6 +1,9 @@
 name: Java CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - '26-amélioration-de-lintégration-continue'
 
 jobs:
   build:
@@ -16,4 +19,3 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots verify
-        
