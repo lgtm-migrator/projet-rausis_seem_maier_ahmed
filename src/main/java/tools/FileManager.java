@@ -1,3 +1,5 @@
+package tools;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -50,7 +52,7 @@ public class FileManager {
         byte[] buffer = new byte[1024];
         int lengthRead;
         while ((lengthRead = in.read(buffer)) > 0) {
-            String append = new String(buffer, StandardCharsets.UTF_8);
+            String append = new String(buffer, 0, lengthRead, StandardCharsets.UTF_8);
             content.append(append);
         }
         return content.toString();
@@ -86,10 +88,10 @@ public class FileManager {
         for (final File fileEntry : directory.listFiles()) {
             if (fileEntry.isDirectory()) {
                 if(!fileEntry.getName().equals("build")) {
+                    createDirectory(initPathBuild + getRelativePath(fileEntry.getPath(), initPath));
                     if(!buildRecursive(fileEntry, initPath, initPathBuild)){
                         return false;
                     }
-                    createDirectory(initPathBuild + getRelativePath(fileEntry.getPath(), initPath));
                 }
             } else {
                 if(fileEntry.getName().contains("yaml")){
@@ -103,7 +105,8 @@ public class FileManager {
                         System.out.println(e.getMessage());
                         return false;
                     }
-                    createFile(temppath.replace("md", "html"), content);
+                    MarkdownToHtml m = new MarkdownToHtml();
+                    createFile(temppath.replace("md", "html"), m.convertToHtml(content));
                 } else {
                     copyFile(fileEntry.getPath(), initPathBuild + getRelativePath(fileEntry.getPath(), initPath));
                 }

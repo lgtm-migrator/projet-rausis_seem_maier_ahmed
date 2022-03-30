@@ -1,9 +1,11 @@
+import java.io.File;
 import java.util.concurrent.Callable;
 
 import Subcommands.Build;
 import Subcommands.New;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import tools.FileManager;
 
 @Command(name="Main", subcommands = {
     Build.class,
@@ -27,8 +29,10 @@ public class Main implements Callable<Integer> {
     }
 
     public static void main(String[] args) {
-        int rc = new CommandLine(new Main()).execute(args);
-        System.exit(rc);
+        FileManager f = new FileManager();
+        f.build("C:\\Ecole\\DIL\\test");
+        // int rc = new CommandLine(new Main()).execute(args);
+        // System.exit(rc);
     }
 
 }
