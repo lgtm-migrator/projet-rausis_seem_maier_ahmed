@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FileManagerTest {
     FileManager f = new FileManager();
-    String path = System.getProperty("user.dir")+ "\\src\\test\\FileManagerTest";
+    String path = System.getProperty("user.dir")+ File.separator + "src" + File.separator + "test" + File.separator + "FileManagerTest";
     // le code dans cette méthode est exécuté avant chaque test
     @org.junit.jupiter.api.BeforeEach
     void setUp() {
@@ -19,7 +19,7 @@ class FileManagerTest {
         Path p = Paths.get(path);
         try {
             Files.createDirectories(p);
-            File f = new File(path + "\\index.md");
+            File f = new File(path + File.separator + "index.md");
 
             if (f.createNewFile()) {
                 String content = "";
@@ -29,7 +29,7 @@ class FileManagerTest {
                 fos.close();
             }
 
-            f = new File(path + "\\config.yaml");
+            f = new File(path + File.separator + "config.yaml");
 
             if (f.createNewFile()) {
                 String content = "";
@@ -39,9 +39,9 @@ class FileManagerTest {
                 fos.close();
             }
 
-            p = Paths.get(path + "\\page");
+            p = Paths.get(path + File.separator + "page");
             Files.createDirectories(p);
-            f = new File(path + "\\page\\page.md");
+            f = new File(path + File.separator + "page" + File.separator + "page.md");
 
             if (f.createNewFile()) {
                 String content = "";
@@ -50,7 +50,7 @@ class FileManagerTest {
                 fos.flush();
                 fos.close();
             }
-            f = new File(path + "\\page\\image.jpg");
+            f = new File(path + File.separator + "page" + File.separator + "image.jpg");
 
             if (f.createNewFile()) {
                 String content = "";
@@ -92,32 +92,32 @@ class FileManagerTest {
 
     @org.junit.jupiter.api.Test
     void testFolderBuildExists() {
-        assertEquals(fileExists(path + "\\build"), true);
+        assertEquals(fileExists(path + File.separator + "build"), true);
     }
 
     @org.junit.jupiter.api.Test
     void testIndexHtmlExists() {
-        assertEquals(fileExists(path + "\\build\\index.html"), true);
+        assertEquals(fileExists(path + File.separator + "build" + File.separator + "index.html"), true);
     }
 
     @org.junit.jupiter.api.Test
     void testConfigurationNotCopied() {
-        assertEquals(!fileExists(path + "\\build\\config.yaml"), true);
+        assertEquals(!fileExists(path + File.separator + "build" + File.separator + "config.yaml"), true);
     }
 
     @org.junit.jupiter.api.Test
     void testFolderPageExists() {
-        assertEquals(fileExists(path + "\\build\\page"), true);
+        assertEquals(fileExists(path + File.separator + "build" + File.separator + "page"), true);
     }
 
     @org.junit.jupiter.api.Test
     void testPageHtmlExists() {
-        assertEquals(fileExists(path + "\\build\\page\\page.html"), true);
+        assertEquals(fileExists(path + File.separator + "build" + File.separator + "page" + File.separator + "page.html"), true);
     }
 
     @org.junit.jupiter.api.Test
     void testImageJpgCopied() {
-        assertEquals(fileExists(path + "\\build\\page\\image.jpg"), true);
+        assertEquals(fileExists(path + File.separator + "build" + File.separator + "page" + File.separator + "image.jpg"), true);
     }
 
 }

@@ -55,6 +55,7 @@ public class FileManager {
             String append = new String(buffer, 0, lengthRead, StandardCharsets.UTF_8);
             content.append(append);
         }
+        in.close();
         return content.toString();
     }
 
@@ -71,6 +72,8 @@ public class FileManager {
                     out.write(buffer, 0, lengthRead);
                     out.flush();
                 }
+                out.close();
+                in.close();
             } else {
                 return false;
             }
@@ -116,18 +119,18 @@ public class FileManager {
     }
 
     public boolean build(String path){
-        if(!fileExists(path + "\\index.md")){
+        if(!fileExists(path + File.separator + "index.md")){
             System.out.println("Le fichier index.md est manquant");
             return false;
         }
 
-        if(!fileExists(path + "\\config.yaml")){
+        if(!fileExists(path + File.separator + "config.yaml")){
             System.out.println("Le fichier config.yaml est manquant");
             return false;
         }
 
-        createDirectory(path + "\\build");
+        createDirectory(path + File.separator + "build");
 
-        return buildRecursive(new File(path), path, path + "\\build");
+        return buildRecursive(new File(path), path, path + File.separator + "build");
     }
 }
