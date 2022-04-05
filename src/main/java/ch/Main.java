@@ -1,24 +1,20 @@
+package ch;
+
 import java.util.concurrent.Callable;
 
-import Subcommands.Build;
-import Subcommands.New;
+import ch.Subcommands.Build;
+import ch.Subcommands.New;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-@Command(name="Main", subcommands = {
+@Command(name="ch.Main", subcommands = {
     Build.class,
-    New.class
+    New.class,
+
 })
 
 public class Main implements Callable<Integer> {
 
-    //Ajout de la sous-commande new
-
-    //Ajout de la sous-commande clean
-
-    //Ajout de la sous-commande build
-
-    //Ajout de la sous-commande serve
 
     @Override
     public Integer call() {
@@ -27,8 +23,10 @@ public class Main implements Callable<Integer> {
     }
 
     public static void main(String[] args) {
-        int rc = new CommandLine(new Main()).execute(args);
-        System.exit(rc);
+        int exitCode = new CommandLine(new ch.Main()).execute(args);
+        if (exitCode != 0) {
+            System.exit(exitCode);
+        }
     }
 
 }

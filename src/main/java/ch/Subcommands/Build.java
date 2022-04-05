@@ -1,4 +1,4 @@
-package Subcommands;
+package ch.Subcommands;
 
 import picocli.CommandLine.Command;
 
