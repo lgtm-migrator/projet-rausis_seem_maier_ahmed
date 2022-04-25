@@ -9,10 +9,15 @@ Il sert avant tout de prétexte pour l'application et l'expérimentation des out
 
 Se positionner à la racine du projet (au niveau du pom.xml).  
  Utiliser la commande :  
-`mvn clean install \ && unzip -o target/statique.zip`  
+```
+mvn clean install \
+    && unzip -o target/statique.zip
+```
 
-ensuite, on ajoute le chemin du bin au path:  
-`export PATH=$PATH:`pwd`/statique/bin`  
+ensuite, on ajoute le chemin du bin au path:
+```
+export PATH=$PATH:`pwd`/statique/bin
+```
 
 On peut maintenant utiliser 'statique' suivit d'une commande définie avec picocli en ligne de commande, mais uniquement
 à la racine du projet (le chemin du bin n'a pas été ajouté définitivement au path de l'ordinateur).
