@@ -39,12 +39,12 @@ public class FileManager {
         return true;
     }
 
-    private boolean fileExists(String path){
+    public static boolean fileExists(String path){
         File file = new File(path);
         return file.exists();
     }
 
-    private String getContent(String path) throws IOException {
+    public static String getContent(String path) throws IOException {
         InputStream in = new BufferedInputStream(new FileInputStream(path));
         StringBuilder content = new StringBuilder();
 
