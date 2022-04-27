@@ -1,0 +1,11 @@
+#!/bin/sh
+#Ce script devrait fonctionner
+#DIR="$( cd "$(dirname "$0")" ; pwd -P )"
+#java -cp "$DIR/../lib/*" ch.heigvd.statique.Statique "$@"
+
+#Script pour ceux dont le pc a le cancer
+cd "$(dirname "$0")"
+cd ..
+
+java -cp "lib/*" "ch.Main" "$@"
+
