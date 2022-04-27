@@ -3,13 +3,15 @@ import java.util.concurrent.Callable;
 
 import Subcommands.Build;
 import Subcommands.New;
+import Subcommands.Version;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import tools.FileManager;
 
 @Command(name="Main", subcommands = {
     Build.class,
-    New.class
+    New.class,
+    Version.class
 })
 
 public class Main implements Callable<Integer> {
