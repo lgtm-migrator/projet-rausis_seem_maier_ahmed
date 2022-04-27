@@ -10,5 +10,8 @@
         <module name="Projet" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="projet-rausis_seem_maier_ahmed" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>
