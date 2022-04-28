@@ -20,8 +20,8 @@ class ConfigInterpretTest {
     @org.junit.jupiter.api.Test
     void stockageEtRecuperationDonnee() {
 
-        ConfigInterpret config = new ConfigInterpret();
-        config.config(jsonString);
+        ConfigInterpret config = ConfigInterpret.getInstance();
+        ConfigInterpret.config(jsonString);
 
         String test1 = config.getConfig("name");
         String test2 = config.getConfig("age");
@@ -37,9 +37,9 @@ class ConfigInterpretTest {
     // Test si on récupère bien les valeur corrects depuis un objet qui n'a pas appelé la méthode config
     @org.junit.jupiter.api.Test
     void testAccesSecondObjet() {
-        ConfigInterpret config = new ConfigInterpret();
-        config.config(jsonString);
-        ConfigInterpret config2 = new ConfigInterpret();
+        ConfigInterpret config = ConfigInterpret.getInstance();
+        ConfigInterpret.config(jsonString);
+        ConfigInterpret config2 = ConfigInterpret.getInstance();
 
         String test1 = config2.getConfig("name");
         String test2 = config2.getConfig("age");

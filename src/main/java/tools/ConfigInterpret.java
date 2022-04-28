@@ -1,15 +1,33 @@
 package tools;
 
 import org.json.*;
+
+import java.io.ObjectInputFilter;
 import java.util.HashMap;
 import java.util.Iterator;
 
 public class ConfigInterpret{
     private HashMap<String, String> itemMap = new HashMap<>();
-    private static final ConfigInterpret permanentConfig = new ConfigInterpret();
+    private static ConfigInterpret permanentConfig = null;
 
-    public void config(String Json) {
+    private ConfigInterpret(){}
+
+    public static ConfigInterpret getInstance()
+    {
+        initInstance();
+
+        return permanentConfig;
+    }
+
+    private static void initInstance(){
+        if (permanentConfig == null) {
+            permanentConfig = new ConfigInterpret();
+        }
+    }
+
+    public static void config(String Json) {
         JSONObject jsonObject = new JSONObject(Json);
+        initInstance();
         permanentConfig.config(jsonObject);
     }
 
@@ -29,7 +47,7 @@ public class ConfigInterpret{
 
     public String getConfig(String key){
 
-        String value = permanentConfig.itemMap.get(key);
+        String value = itemMap.get(key);
 
         if(value != null){
             return value;
