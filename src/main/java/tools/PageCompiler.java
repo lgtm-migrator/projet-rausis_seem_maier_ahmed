@@ -1,20 +1,20 @@
 package tools;
 
-import java.io.File;
-import java.util.AbstractMap;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
 public class PageCompiler {
     private HashMap<String, String> pageParameter = new HashMap<>();
+    private final String LAYOUT_NAME = "layout.html";
+    private final String SPLIT_PARAMETER = ": ";
     private final String HEADER_CONTENT_SEPARATOR = "---";
     private final String SITE_PREFIXE = "site";
     private final String PAGE_PREFIXE = "page";
     private final String CONTENT = "{{ content }}";
-    private final String INCLUDE_START = "{* include";
+    private final String INCLUDE_START_REGEX = "\\{\\% include";
+    private final String INCLUDE_START = "{% include";
     private final String INCLUDE_END = "}";
     private final String PARAMETER_START = "{{";
+    private final String PARAMETER_START_REGEX = "\\{\\{";
     private final String PARAMETER_END = "}}";
     private String homeDir;
 
@@ -31,8 +31,8 @@ public class PageCompiler {
     private void extractPageParameter(String pageHeader){
         String[] rowsHeader = pageHeader.split("\n");
         for (String row : rowsHeader) {
-            String[] keyValue = row.split(":");
-            pageParameter.put(keyValue[0], keyValue[1].replace(" ", ""));
+            String[] keyValue = row.split(SPLIT_PARAMETER);
+            pageParameter.put(keyValue[0], keyValue[1]);
         }
     }
 
@@ -43,14 +43,16 @@ public class PageCompiler {
      * @return
      */
     private String getParameter(String parameterKey){
-        String[] splitPrefixeKey = parameterKey.split(".");
+        String[] splitPrefixeKey = parameterKey.split("\\.");
         if(splitPrefixeKey.length <= 1) return splitPrefixeKey[0];
-        if(splitPrefixeKey[0].equals(PAGE_PREFIXE)){
-            return pageParameter.get(parameterKey);
+        String prefix = splitPrefixeKey[0];
+        String key = splitPrefixeKey[1];
+        if(prefix.equals(PAGE_PREFIXE)){
+            return pageParameter.getOrDefault(key, parameterKey);
         }
-        if(splitPrefixeKey[1].equals(SITE_PREFIXE)) {
+        if(prefix.equals(SITE_PREFIXE)) {
             //Retourne les paramtères globaux au site
-            return "";
+            return parameterKey;
         }
         return parameterKey;
     }
@@ -58,7 +60,7 @@ public class PageCompiler {
 
     /**
      * Compile une page en utilisant un layout.
-     * S'il n'y a pas de fichier layout.html à la racine, retourne uniquement le
+     * S'il n'y a pas de fichier LAYOUT_NAME à la racine, retourne uniquement le
      * contenu html correspondant au code markdown
      * @param pageContent
      * @return
@@ -73,7 +75,7 @@ public class PageCompiler {
         extractPageParameter(header);
 
         //Récupérer le contenu du layout
-        String layoutPath = this.homeDir + "\\layout.html";
+        String layoutPath = this.homeDir + "\\" + LAYOUT_NAME;
         if(!FileManager.fileExists(layoutPath)){
             return MarkdownToHtml.convertToHtml(content);
         }
@@ -81,13 +83,14 @@ public class PageCompiler {
             String layout = FileManager.getContent(layoutPath);
             String[] rowsLayout = layout.split("\n");
             StringBuilder finalPage = new StringBuilder();
+            //Check ligne par ligne du layout s'il y a des remplacements à faire
             for(String row : rowsLayout){
                 if(row.contains(CONTENT)){
                     //Remplacer le content
-                    finalPage.append(row.replace(CONTENT, MarkdownToHtml.convertToHtml(content)));
+                    finalPage.append(row.replace(CONTENT, MarkdownToHtml.convertToHtml(content)) + "\n");
                 } else if (row.contains(INCLUDE_START) && row.contains(INCLUDE_END)){
                     //Remplacer les includes
-                    String[] temp = row.split(INCLUDE_START);
+                    String[] temp = row.split(INCLUDE_START_REGEX);
                     int idInclude = (temp.length > 1) ? 1 : 0;
                     String include = temp[idInclude].split(INCLUDE_END)[0];
                     String fileRelativePath = include.replace(" ", "");
@@ -95,26 +98,31 @@ public class PageCompiler {
                     if(FileManager.fileExists(fileAbsolutePath)) {
                         String includeContent = FileManager.getContent(fileAbsolutePath);
                         String strReplace = INCLUDE_START + include + INCLUDE_END;
-                        finalPage.append(row.replace(strReplace, includeContent));
+                        finalPage.append(row.replace(strReplace, includeContent) + "\n");
                     } else {
                         finalPage.append(row);
                     }
                 } else if (row.contains(PARAMETER_END) && row.contains(PARAMETER_START)){
                     //Remplacer les paramètres
-                    String[] temp = row.split(PARAMETER_START);
-                    int idInclude = (temp.length > 1) ? 1 : 0;
-                    String key = temp[idInclude].split(PARAMETER_END)[0];
-                    String value = getParameter(key.replace(" ", ""));
-                    String strReplace = INCLUDE_START + key + INCLUDE_END;
-                    finalPage.append(row.replace(strReplace, value));
+                    String[] temp = row.split(PARAMETER_START_REGEX);
+                    String finalRow = row;
+                    for(String part : temp){
+                        if(part.contains(PARAMETER_END)){
+                            String key = part.split(PARAMETER_END)[0];
+                            String value = getParameter(key.replace(" ", ""));
+                            String strReplace = PARAMETER_START + key + PARAMETER_END;
+                            finalRow = finalRow.replace(strReplace, value);
+                        }
+                    }
+                    finalPage.append(finalRow + "\n");
                 } else {
-                    finalPage.append(row);
+                    finalPage.append(row + "\n");
                 }
             }
             return finalPage.toString();
         } catch (Exception e){
             System.out.println(e.getMessage());
+            return MarkdownToHtml.convertToHtml(content);
         }
-        return MarkdownToHtml.convertToHtml(content);
     }
 }
