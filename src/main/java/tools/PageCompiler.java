@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class PageCompiler {
     private HashMap<String, String> pageParameter = new HashMap<>();
-    private final String LAYOUT_NAME = "layout.html";
+    public static final String LAYOUT_NAME = "layout.html";
     private final String SPLIT_PARAMETER = ": ";
     private final String HEADER_CONTENT_SEPARATOR = "---";
     private final String SITE_PREFIXE = "site";
@@ -57,6 +57,15 @@ public class PageCompiler {
         return parameterKey;
     }
 
+    private String addIndentation(String content, String indentation){
+        StringBuilder str = new StringBuilder();
+        String[] rows = content.split("\n");
+        for(String row : rows){
+            str.append(indentation).append(row).append("\n");
+        }
+        return str.toString();
+    }
+
 
     /**
      * Compile une page en utilisant un layout.
@@ -87,7 +96,8 @@ public class PageCompiler {
             for(String row : rowsLayout){
                 if(row.contains(CONTENT)){
                     //Remplacer le content
-                    finalPage.append(row.replace(CONTENT, MarkdownToHtml.convertToHtml(content)) + "\n");
+                    String indentation = row.replace(CONTENT, "");
+                    finalPage.append(addIndentation(MarkdownToHtml.convertToHtml(content), indentation));
                 } else if (row.contains(INCLUDE_START) && row.contains(INCLUDE_END)){
                     //Remplacer les includes
                     String[] temp = row.split(INCLUDE_START_REGEX);
@@ -97,8 +107,8 @@ public class PageCompiler {
                     String fileAbsolutePath = this.homeDir + "\\" + fileRelativePath;
                     if(FileManager.fileExists(fileAbsolutePath)) {
                         String includeContent = FileManager.getContent(fileAbsolutePath);
-                        String strReplace = INCLUDE_START + include + INCLUDE_END;
-                        finalPage.append(row.replace(strReplace, includeContent) + "\n");
+                        String indentation = row.replace(INCLUDE_START + include + INCLUDE_END, "");
+                        finalPage.append(addIndentation(includeContent, indentation));
                     } else {
                         finalPage.append(row);
                     }
@@ -114,9 +124,9 @@ public class PageCompiler {
                             finalRow = finalRow.replace(strReplace, value);
                         }
                     }
-                    finalPage.append(finalRow + "\n");
+                    finalPage.append(finalRow).append("\n");
                 } else {
-                    finalPage.append(row + "\n");
+                    finalPage.append(row).append("\n");
                 }
             }
             return finalPage.toString();
