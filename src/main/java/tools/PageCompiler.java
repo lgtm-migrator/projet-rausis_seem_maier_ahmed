@@ -1,5 +1,6 @@
 package tools;
 
+import java.io.File;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.List;
@@ -11,9 +12,15 @@ public class PageCompiler {
     private final String SITE_PREFIXE = "site";
     private final String PAGE_PREFIXE = "page";
     private final String CONTENT = "{{ content }}";
-    private final String INCLUDE = "{* include";
+    private final String INCLUDE_START = "{* include";
+    private final String INCLUDE_END = "}";
     private final String PARAMETER_START = "{{";
     private final String PARAMETER_END = "}}";
+    private String homeDir;
+
+    public PageCompiler(String homeDir){
+        this.homeDir = homeDir;
+    }
 
     /**
      * Permet d'extraire les paramètres d'une page
@@ -66,7 +73,7 @@ public class PageCompiler {
         extractPageParameter(header);
 
         //Récupérer le contenu du layout
-        String layoutPath = System.getProperty("user.dir") + "\\layout.html";
+        String layoutPath = this.homeDir + "\\layout.html";
         if(!FileManager.fileExists(layoutPath)){
             return MarkdownToHtml.convertToHtml(content);
         }
@@ -77,13 +84,29 @@ public class PageCompiler {
             for(String row : rowsLayout){
                 if(row.contains(CONTENT)){
                     //Remplacer le content
-
-                } else if (row.contains(INCLUDE)){
+                    finalPage.append(row.replace(CONTENT, MarkdownToHtml.convertToHtml(content)));
+                } else if (row.contains(INCLUDE_START) && row.contains(INCLUDE_END)){
                     //Remplacer les includes
-
+                    String[] temp = row.split(INCLUDE_START);
+                    int idInclude = (temp.length > 1) ? 1 : 0;
+                    String include = temp[idInclude].split(INCLUDE_END)[0];
+                    String fileRelativePath = include.replace(" ", "");
+                    String fileAbsolutePath = this.homeDir + "\\" + fileRelativePath;
+                    if(FileManager.fileExists(fileAbsolutePath)) {
+                        String includeContent = FileManager.getContent(fileAbsolutePath);
+                        String strReplace = INCLUDE_START + include + INCLUDE_END;
+                        finalPage.append(row.replace(strReplace, includeContent));
+                    } else {
+                        finalPage.append(row);
+                    }
                 } else if (row.contains(PARAMETER_END) && row.contains(PARAMETER_START)){
                     //Remplacer les paramètres
-
+                    String[] temp = row.split(PARAMETER_START);
+                    int idInclude = (temp.length > 1) ? 1 : 0;
+                    String key = temp[idInclude].split(PARAMETER_END)[0];
+                    String value = getParameter(key.replace(" ", ""));
+                    String strReplace = INCLUDE_START + key + INCLUDE_END;
+                    finalPage.append(row.replace(strReplace, value));
                 } else {
                     finalPage.append(row);
                 }
