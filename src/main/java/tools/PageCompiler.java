@@ -52,7 +52,9 @@ public class PageCompiler {
         }
         if(prefix.equals(SITE_PREFIXE)) {
             //Retourne les paramtères globaux au site
-            return parameterKey;
+            JsonConfig jc = JsonConfig.getState();
+            if(jc == null) return parameterKey;
+            return jc.get(key);
         }
         return parameterKey;
     }
@@ -129,7 +131,8 @@ public class PageCompiler {
                     finalPage.append(row).append("\n");
                 }
             }
-            return finalPage.toString();
+            //Enlève le \n en trop
+            return finalPage.substring(0, finalPage.length() - 1);
         } catch (Exception e){
             System.out.println(e.getMessage());
             return MarkdownToHtml.convertToHtml(content);
