@@ -52,9 +52,8 @@ public class PageCompiler {
         }
         if(prefix.equals(SITE_PREFIXE)) {
             //Retourne les paramtères globaux au site
-            JsonConfig jc = JsonConfig.getState();
-            if(jc == null) return parameterKey;
-            return jc.get(key);
+            ConfigInterpret ci = ConfigInterpret.getInstance();
+            return ci.getConfig(key);
         }
         return parameterKey;
     }

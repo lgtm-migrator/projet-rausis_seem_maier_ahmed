@@ -1,5 +1,5 @@
+import tools.ConfigInterpret;
 import tools.FileManager;
-import tools.JsonConfig;
 import tools.PageCompiler;
 
 import java.io.File;
@@ -58,7 +58,7 @@ public class PageCompilerTest {
         }
 
         //Initialisation des configurations du site
-        JsonConfig.initState("titre: Mon site");
+        ConfigInterpret.config("titre: Mon site");
     }
 
     void deleteDirectory(File directoryToBeDeleted) {
