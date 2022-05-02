@@ -3,6 +3,7 @@ package Subcommands;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Command;
 
+import java.io.File;
 import java.util.concurrent.Callable;
 
 import tools.FileManager;
@@ -14,7 +15,7 @@ public class Build implements Callable<Integer> {
     private String path;
 
     @Override public Integer call() {
-        String longPath = System.getProperty("user.dir") + "\\" + path;
+        String longPath = System.getProperty("user.dir") + File.separator + path;
         System.out.println(longPath);
         FileManager f = new FileManager();
         f.build(longPath);
