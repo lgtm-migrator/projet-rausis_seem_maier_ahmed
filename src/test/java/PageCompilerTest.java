@@ -80,7 +80,7 @@ public class PageCompilerTest {
     }
 
     @org.junit.jupiter.api.Test
-    void testFolderBuildExists() {
+    void testContent() {
         String pageContent =
                 "titre: Mon premier article\n" +
                 "auteur: Bertil Chapuis\n" +

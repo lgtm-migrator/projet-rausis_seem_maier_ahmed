@@ -1,5 +1,6 @@
 package tools;
 
+import java.io.File;
 import java.util.HashMap;
 
 public class PageCompiler {
@@ -85,7 +86,7 @@ public class PageCompiler {
         extractPageParameter(header);
 
         //Récupérer le contenu du layout
-        String layoutPath = this.homeDir + "\\" + LAYOUT_NAME;
+        String layoutPath = this.homeDir + File.separator + LAYOUT_NAME;
         if(!FileManager.fileExists(layoutPath)){
             return MarkdownToHtml.convertToHtml(content);
         }
@@ -105,7 +106,7 @@ public class PageCompiler {
                     int idInclude = (temp.length > 1) ? 1 : 0;
                     String include = temp[idInclude].split(INCLUDE_END)[0];
                     String fileRelativePath = include.replace(" ", "");
-                    String fileAbsolutePath = this.homeDir + "\\" + fileRelativePath;
+                    String fileAbsolutePath = this.homeDir + File.separator + fileRelativePath;
                     if(FileManager.fileExists(fileAbsolutePath)) {
                         String includeContent = FileManager.getContent(fileAbsolutePath);
                         String indentation = row.replace(INCLUDE_START + include + INCLUDE_END, "");
