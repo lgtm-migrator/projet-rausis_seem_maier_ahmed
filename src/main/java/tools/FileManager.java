@@ -8,6 +8,12 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class FileManager {
+    /**
+     * Créer un fichier à un certain endroit et avec un certain contenu
+     * @param path l'endroit ou créer le fichier
+     * @param content le contenu du fichier
+     * @return Vrai si la création du fichier est un succès
+     */
     private boolean createFile(String path, String content) {
         try {
             File f = new File(path);
@@ -25,6 +31,11 @@ public class FileManager {
         return true;
     }
 
+    /**
+     * Créer le répertoire path
+     * @param path le répertoire à créer (chemin absolue)
+     * @return
+     */
     private boolean createDirectory(String path) {
         try {
 
@@ -39,11 +50,22 @@ public class FileManager {
         return true;
     }
 
+    /**
+     * Vérifie si un fichier existe
+     * @param path le chemin du fichier à vérifier
+     * @return vrai s'il existe
+     */
     private boolean fileExists(String path){
         File file = new File(path);
         return file.exists();
     }
 
+    /**
+     * Permet de récupére le contenu d'un fichier
+     * @param path le chemin du fichier à récupérer le contenu
+     * @return le contenu du fichier
+     * @throws IOException
+     */
     private String getContent(String path) throws IOException {
         InputStream in = new BufferedInputStream(new FileInputStream(path));
         StringBuilder content = new StringBuilder();
@@ -59,6 +81,12 @@ public class FileManager {
         return content.toString();
     }
 
+    /**
+     * Permet de copier un fichier (from) à un autre endroit (to)
+     * @param from le fichier source
+     * @param to le nouveau fichier
+     * @return
+     */
     private boolean copyFile(String from, String to) {
         try {
             File f = new File(to);
@@ -83,10 +111,23 @@ public class FileManager {
         return true;
     }
 
+    /**
+     * Permet de récupérer un lien relatif depuis un lien absolue et la référence
+     * @param absolutePath le lien absolue
+     * @param initPath la référence
+     * @return
+     */
     private String getRelativePath(String absolutePath, String initPath){
         return absolutePath.substring(initPath.length(), absolutePath.length());
     }
 
+    /**
+     * Gère le processus du build (de manière récursive s'il y a des sous dossiers)
+     * @param directory le répertoire à traiter (peut être un sous-répertoire)
+     * @param initPath le path initiale (ou le build à été lancé)
+     * @param initPathBuild le path du build (en générale initPath + "/build")
+     * @return Vrai si le build est réussi
+     */
     private boolean buildRecursive(File directory, String initPath, String initPathBuild){
         for (final File fileEntry : directory.listFiles()) {
             if (fileEntry.isDirectory()) {
@@ -118,6 +159,12 @@ public class FileManager {
         return true;
     }
 
+    /**
+     * Permet de faire les premières actions du build
+     * (vérification des fichiers obligatoires, TODO: load du fichier de config
+     * @param path le dossier à "build"
+     * @return vrai si le build est un succès
+     */
     public boolean build(String path){
         if(!fileExists(path + File.separator + "index.md")){
             System.out.println("Le fichier index.md est manquant");
