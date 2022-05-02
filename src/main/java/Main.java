@@ -1,28 +1,17 @@
-import java.io.File;
 import java.util.concurrent.Callable;
 
 import Subcommands.Build;
 import Subcommands.New;
-import Subcommands.Version;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
-import tools.FileManager;
+import tools.*;
 
 @Command(name="Main", subcommands = {
     Build.class,
-    New.class,
-    Version.class
+    New.class
 })
 
 public class Main implements Callable<Integer> {
-
-    //Ajout de la sous-commande new
-
-    //Ajout de la sous-commande clean
-
-    //Ajout de la sous-commande build
-
-    //Ajout de la sous-commande serve
 
     @Override
     public Integer call() {
@@ -31,6 +20,7 @@ public class Main implements Callable<Integer> {
     }
 
     public static void main(String[] args) {
+
         int rc = new CommandLine(new Main()).execute(args);
         System.exit(rc);
     }
