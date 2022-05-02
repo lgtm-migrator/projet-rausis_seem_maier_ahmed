@@ -58,7 +58,7 @@ public class PageCompilerTest {
         }
 
         //Initialisation des configurations du site
-        ConfigInterpret.config("titre: Mon site");
+        ConfigInterpret.config("{titre: Mon site}");
     }
 
     void deleteDirectory(File directoryToBeDeleted) {
