@@ -4,6 +4,7 @@ import Subcommands.Build;
 import Subcommands.New;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import tools.*;
 
 @Command(name="Main", subcommands = {
     Build.class,
@@ -12,14 +13,6 @@ import picocli.CommandLine.Command;
 
 public class Main implements Callable<Integer> {
 
-    //Ajout de la sous-commande new
-
-    //Ajout de la sous-commande clean
-
-    //Ajout de la sous-commande build
-
-    //Ajout de la sous-commande serve
-
     @Override
     public Integer call() {
         System.out.println("Mesage au démarrage");
@@ -27,6 +20,7 @@ public class Main implements Callable<Integer> {
     }
 
     public static void main(String[] args) {
+
         int rc = new CommandLine(new Main()).execute(args);
         System.exit(rc);
     }
