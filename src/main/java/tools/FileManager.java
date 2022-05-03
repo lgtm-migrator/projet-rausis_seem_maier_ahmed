@@ -25,7 +25,7 @@ public class FileManager {
         return true;
     }
 
-    private boolean createDirectory(String path) {
+    public boolean createDirectory(String path) {
         try {
 
             Path p = Paths.get(path);
@@ -43,7 +43,7 @@ public class FileManager {
         File file = new File(path);
         return file.exists();
     }
-
+  
     public static String getContent(String path) throws IOException {
         InputStream in = new BufferedInputStream(new FileInputStream(path));
         StringBuilder content = new StringBuilder();
@@ -132,5 +132,51 @@ public class FileManager {
         createDirectory(path + File.separator + "build");
 
         return buildRecursive(new File(path), path, path + File.separator + "build");
+    }
+
+    /**
+     * Permet de générer les premiers fichiers à un endroit particuler
+     * @param path le chemin ou générer les fichiers
+     */
+    public boolean init(String path) {
+        //Vérifie que le répertoire fournit existe vraiment
+        if(!fileExists(path)) return false;
+
+        //Créer le fichier index.md
+        boolean createIndex = createFile(path + File.separator + "index.md",
+                "titre: Mon premier article\n" +
+                "auteur: Bertil Chapuis\n" +
+                "date: 2021-03-10\n" +
+                "---\n" +
+                "# Mon titre\n" +
+                "## Mon sous-titre\n" +
+                "Le contenu de mon article.\n" +
+                "![Une image](./image.png)"
+        );
+        if(!createIndex) return false;
+
+        //Créer le fichier config.json
+        boolean createConfig = createFile(path + File.separator + "config.json",
+                "{" +
+                        "   domaine: www.mon-site.com\n" +
+                        "   titre: \"Mon site\"" +
+                        "}"
+        );
+        if(!createConfig) return false;
+        return true;
+    }
+
+    /**
+     * Supprime de manière récursive un répertoire
+     * @param directoryToBeDeleted le répertoire à supprimer
+     */
+    public void deleteRecursive(File directoryToBeDeleted){
+        File[] allContents = directoryToBeDeleted.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteRecursive(file);
+            }
+        }
+        directoryToBeDeleted.delete();
     }
 }

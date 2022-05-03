@@ -40,6 +40,4 @@ class MarkdownToHtmlTest {
         assertEquals(converter.convertToHtml(markdown), htmlCorrect, "La conversion avec plusieurs lignes n'est pas correct!");
     }
 
-
-
 }
