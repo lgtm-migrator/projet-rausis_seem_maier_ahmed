@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class FileManager {
-    private boolean createFile(String path, String content) {
+    public boolean createFile(String path, String content) {
         try {
             File f = new File(path);
 
