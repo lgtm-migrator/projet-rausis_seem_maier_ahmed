@@ -4,7 +4,7 @@ import org.commonmark.node.*;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 public class MarkdownToHtml {
-    public String convertToHtml(String markdown){
+    public static String convertToHtml(String markdown){
 
         Parser parser = Parser.builder().build();
         Node document = parser.parse(markdown);
