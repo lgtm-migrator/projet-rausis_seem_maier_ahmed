@@ -1,27 +1,27 @@
-import java.awt.*;
 import java.util.concurrent.Callable;
 
 import Subcommands.Build;
 import Subcommands.New;
-import Subcommands.Version;
+
+import java.net.URL;
+import java.util.Properties;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.IVersionProvider;
+import picocli.CommandLine.Option;
 
-@Command(name="Main", subcommands = {
-    Build.class,
-    New.class,
-    Version.class
-})
+@Command(name="Main",
+         description = "C'est un site statique",
+         subcommands = {
+                        Build.class,
+                        New.class
+                       },
+         versionProvider = Main.PropertiesVersionProvider.class)
 
 public class Main implements Callable<Integer> {
 
-    //Ajout de la sous-commande new
-
-    //Ajout de la sous-commande clean
-
-    //Ajout de la sous-commande build
-
-    //Ajout de la sous-commande serve
+    @Option(names = {"-V", "-version"}, versionHelp = true, description = "Print version info and exit")
+    boolean versionRequested;
 
     @Override
     public Integer call() {
@@ -30,13 +30,22 @@ public class Main implements Callable<Integer> {
     }
 
     public static void main(String[] args) {
-        String s = "";
-        if(args[0].charAt(0) == '-'){
-            s = args[0].substring(1);
-        }
-        System.out.println(s);
-        int rc = new CommandLine(new Main()).execute(s);
+        int rc = new CommandLine(new Main()).execute(args);
         System.exit(rc);
     }
 
+    static class PropertiesVersionProvider implements IVersionProvider {
+
+        public String[] getVersion() throws Exception {
+            URL url = getClass().getResource("/version.txt");
+            if (url == null) {
+                return new String[]{"No version.txt file found in the classpath. Is examples.jar in the classpath?"};
+            }
+            Properties properties = new Properties();
+            properties.load(url.openStream());
+            return new String[]{
+                    properties.getProperty("application") + " " + properties.getProperty("version")
+            };
+        }
+    }
 }
