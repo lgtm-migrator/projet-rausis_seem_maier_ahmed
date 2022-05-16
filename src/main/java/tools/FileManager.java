@@ -2,10 +2,7 @@ package tools;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 
 public class FileManager {
     public boolean createFile(String path, String content) {
@@ -132,6 +129,29 @@ public class FileManager {
         createDirectory(path + File.separator + "build");
 
         return buildRecursive(new File(path), path, path + File.separator + "build");
+    }
+
+    /**
+     * Permet d'écouter les changements dans le dossier path
+     * et de re-build lorsqu'il y a un changement de fichier
+     * @param path le dossier à écouter
+     */
+    public void watch(String path){
+        try {
+            WatcherRecursive wr = new WatcherRecursive(path);
+            WatchKey key;
+            while((key = wr.watch()) != null){
+                for(WatchEvent<?> event : key.pollEvents()){
+                    Path dir = (Path)key.watchable();
+                    Path fullPath = dir.resolve(event.context().toString());
+                    System.out.println(event.kind() + " : " + fullPath);
+
+                    //Si le fichier modifier est le fichier de config, un layout
+                }
+            }
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 
     /**

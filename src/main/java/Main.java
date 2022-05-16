@@ -21,9 +21,10 @@ public class Main implements Callable<Integer> {
     }
 
     public static void main(String[] args) {
-
-        int rc = new CommandLine(new Main()).execute(args);
-        System.exit(rc);
+        FileManager fm = new FileManager();
+        fm.watch("C:\\Ecole\\DIL\\test");
+        /*int rc = new CommandLine(new Main()).execute(args);
+        System.exit(rc);*/
     }
 
 
