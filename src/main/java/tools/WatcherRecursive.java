@@ -9,6 +9,11 @@ public class WatcherRecursive {
     private String directoryPath;
     private final WatchService watcher = FileSystems.getDefault().newWatchService();
 
+    public interface SignalChange{
+        public void change(WatchKey key) throws InterruptedException;
+    }
+
+
     /**
      * Constructeur de la place avec le chemin du dossier à watch
      * @param path le chemin absolue du dossier
@@ -22,8 +27,13 @@ public class WatcherRecursive {
      * Attend jusqu'au prochain event catch
      * @return l'event catch
      */
-    public WatchKey watch() throws InterruptedException {
-        WatchKey key = watcher.take();
+    public WatchKey watch(SignalChange signal) throws InterruptedException {
+        WatchKey key;
+        System.out.println("watching");
+        while((key = watcher.take()) != null){
+            signal.change(key);
+            key.reset();
+        }
         return key;
     }
 

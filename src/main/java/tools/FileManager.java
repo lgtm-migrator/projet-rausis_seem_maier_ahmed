@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 
 public class FileManager {
+    private final static String CONFIG_FILENAME = "config.json";
+    private final static String LAYOUT_FILENAME = "layout.html";
     public boolean createFile(String path, String content) {
         try {
             File f = new File(path);
@@ -116,17 +118,22 @@ public class FileManager {
     }
 
     public boolean build(String path){
+        // Vérifie que les fichiers index et config existes
         if(!fileExists(path + File.separator + "index.md")){
             System.out.println("Le fichier index.md est manquant");
             return false;
         }
 
-        if(!fileExists(path + File.separator + "config.yaml")){
+        if(!fileExists(path + File.separator + "config.json")){
             System.out.println("Le fichier config.yaml est manquant");
             return false;
         }
 
-        createDirectory(path + File.separator + "build");
+        String buildPath = path + File.separator + "build";
+        //Supprime le dossier build s'il existe
+        if(fileExists(buildPath)) deleteRecursive(new File(buildPath));
+
+        createDirectory(buildPath);
 
         return buildRecursive(new File(path), path, path + File.separator + "build");
     }
@@ -140,15 +147,20 @@ public class FileManager {
         try {
             WatcherRecursive wr = new WatcherRecursive(path);
             WatchKey key;
-            while((key = wr.watch()) != null){
-                for(WatchEvent<?> event : key.pollEvents()){
-                    Path dir = (Path)key.watchable();
-                    Path fullPath = dir.resolve(event.context().toString());
-                    System.out.println(event.kind() + " : " + fullPath);
-
-                    //Si le fichier modifier est le fichier de config, un layout
+            wr.watch(new WatcherRecursive.SignalChange() {
+                @Override
+                public void change(WatchKey key) throws InterruptedException {
+                    for(WatchEvent<?> event : key.pollEvents()) {
+                        String fileName = event.context().toString();
+                        if(!fileName.equals("build")) {
+                            build(path);
+                            Path dir = (Path) key.watchable();
+                            Path fullPath = dir.resolve(fileName);
+                            System.out.println(event.kind() + " : " + fullPath);
+                        }
+                    }
                 }
-            }
+            });
         } catch (Exception e){
             System.out.println(e.getMessage());
         }
