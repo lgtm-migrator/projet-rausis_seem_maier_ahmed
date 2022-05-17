@@ -1,14 +1,15 @@
 import java.util.concurrent.Callable;
 
-import Subcommands.Build;
-import Subcommands.New;
+import Subcommands.*;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import tools.*;
 
 @Command(name="Main", subcommands = {
     Build.class,
-    New.class
+    New.class,
+    Init.class,
+    Clean.class,
 })
 
 public class Main implements Callable<Integer> {
@@ -24,5 +25,6 @@ public class Main implements Callable<Integer> {
         int rc = new CommandLine(new Main()).execute(args);
         System.exit(rc);
     }
+
 
 }
