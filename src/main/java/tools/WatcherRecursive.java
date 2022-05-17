@@ -9,8 +9,12 @@ public class WatcherRecursive {
     private String directoryPath;
     private final WatchService watcher = FileSystems.getDefault().newWatchService();
 
+    /**
+     * L'interface permet à la boucle while qui attend une modification sur un fichier
+     * de signaler cette modification en utilisatn la méthode change
+     */
     public interface SignalChange{
-        public void change(WatchKey key) throws InterruptedException;
+        void change(WatchKey key) throws InterruptedException;
     }
 
 
@@ -29,8 +33,9 @@ public class WatcherRecursive {
      */
     public WatchKey watch(SignalChange signal) throws InterruptedException {
         WatchKey key;
-        System.out.println("watching");
+        System.out.println("Ecoute un changement de fichier dans " + directoryPath);
         while((key = watcher.take()) != null){
+            //TODO: Signal 2 fois chaque modification mais je ne comprends pas pourquoi
             signal.change(key);
             key.reset();
         }

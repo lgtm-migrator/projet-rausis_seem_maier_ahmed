@@ -146,17 +146,23 @@ public class FileManager {
     public void watch(String path){
         try {
             WatcherRecursive wr = new WatcherRecursive(path);
-            WatchKey key;
             wr.watch(new WatcherRecursive.SignalChange() {
                 @Override
                 public void change(WatchKey key) throws InterruptedException {
                     for(WatchEvent<?> event : key.pollEvents()) {
                         String fileName = event.context().toString();
                         if(!fileName.equals("build")) {
-                            build(path);
-                            Path dir = (Path) key.watchable();
-                            Path fullPath = dir.resolve(fileName);
-                            System.out.println(event.kind() + " : " + fullPath);
+                            /*
+                            Le rebuild pourrait être optimisé en remplaçant dans le dossier
+                            build uniquement les fichiers impactés par la modification du
+                            fichier x ou y.
+                            */
+                            System.out.println("Reconstruction ...");
+                            if(build(path)){
+                                System.out.println("Fin de la reconstruction");
+                            } else {
+                                System.out.println("Reconstruction interrompue");
+                            }
                         }
                     }
                 }
