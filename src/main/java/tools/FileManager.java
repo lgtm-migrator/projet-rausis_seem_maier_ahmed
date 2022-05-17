@@ -96,8 +96,8 @@ public class FileManager {
                     }
                 }
             } else {
-                if(fileEntry.getName().contains("yaml")){
-                    //Ignorer les fichiers yaml
+                if(fileEntry.getName().contains("config.json")){
+                    //Ignorer le fichier config.json
                 } else if(fileEntry.getName().contains("md")){
                     String temppath = initPathBuild + getRelativePath(fileEntry.getPath(), initPath);
                     String content = "";
@@ -125,7 +125,7 @@ public class FileManager {
         }
 
         if(!fileExists(path + File.separator + "config.json")){
-            System.out.println("Le fichier config.yaml est manquant");
+            System.out.println("Le fichier config.json est manquant");
             return false;
         }
 
