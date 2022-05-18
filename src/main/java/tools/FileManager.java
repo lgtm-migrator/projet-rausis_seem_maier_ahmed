@@ -2,12 +2,11 @@ package tools;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 
 public class FileManager {
+    private final static String CONFIG_FILENAME = "config.json";
+    private final static String LAYOUT_FILENAME = "layout.html";
     public boolean createFile(String path, String content) {
         try {
             File f = new File(path);
@@ -97,8 +96,8 @@ public class FileManager {
                     }
                 }
             } else {
-                if(fileEntry.getName().contains("yaml")){
-                    //Ignorer les fichiers yaml
+                if(fileEntry.getName().contains("config.json")){
+                    //Ignorer le fichier config.json
                 } else if(fileEntry.getName().contains("md")){
                     String temppath = initPathBuild + getRelativePath(fileEntry.getPath(), initPath);
                     String content = "";
@@ -119,19 +118,58 @@ public class FileManager {
     }
 
     public boolean build(String path){
+        // Vérifie que les fichiers index et config existes
         if(!fileExists(path + File.separator + "index.md")){
             System.out.println("Le fichier index.md est manquant");
             return false;
         }
 
-        if(!fileExists(path + File.separator + "config.yaml")){
-            System.out.println("Le fichier config.yaml est manquant");
+        if(!fileExists(path + File.separator + "config.json")){
+            System.out.println("Le fichier config.json est manquant");
             return false;
         }
 
-        createDirectory(path + File.separator + "build");
+        String buildPath = path + File.separator + "build";
+        //Supprime le dossier build s'il existe
+        if(fileExists(buildPath)) deleteRecursive(new File(buildPath));
+
+        createDirectory(buildPath);
 
         return buildRecursive(new File(path), path, path + File.separator + "build");
+    }
+
+    /**
+     * Permet d'écouter les changements dans le dossier path
+     * et de re-build lorsqu'il y a un changement de fichier
+     * @param path le dossier à écouter
+     */
+    public void watch(String path){
+        try {
+            WatcherRecursive wr = new WatcherRecursive(path);
+            wr.watch(new WatcherRecursive.SignalChange() {
+                @Override
+                public void change(WatchKey key) throws InterruptedException {
+                    for(WatchEvent<?> event : key.pollEvents()) {
+                        String fileName = event.context().toString();
+                        if(!fileName.equals("build")) {
+                            /*
+                            Le rebuild pourrait être optimisé en remplaçant dans le dossier
+                            build uniquement les fichiers impactés par la modification du
+                            fichier x ou y.
+                            */
+                            System.out.println("Reconstruction ...");
+                            if(build(path)){
+                                System.out.println("Fin de la reconstruction");
+                            } else {
+                                System.out.println("Reconstruction interrompue");
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
