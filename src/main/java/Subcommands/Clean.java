@@ -1,24 +1,22 @@
 package Subcommands;
 
-import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Parameters;
+import tools.FileManager;
 
 import java.io.File;
 import java.util.concurrent.Callable;
 
-import tools.FileManager;
-
-@Command(name = "build", description = "Build")
-public class Build implements Callable<Integer> {
+@Command(name = "clean", description = "Clean")
+public class Clean implements Callable<Integer> {
 
     @Parameters(index = "0", description = "The path to the folder.")
     private String path;
 
     @Override public Integer call() {
-        String longPath = System.getProperty("user.dir") + File.separator + path;
-        System.out.println(longPath);
+        String longPath = System.getProperty("user.dir") + File.separator + path + File.separator + "build";;
         FileManager f = new FileManager();
-        f.build(longPath);
+        f.deleteRecursive(new File(longPath));
         return 0;
     }
 }
