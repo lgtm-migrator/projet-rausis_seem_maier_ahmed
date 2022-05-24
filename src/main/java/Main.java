@@ -21,8 +21,13 @@ public class Main implements Callable<Integer> {
     }
 
     public static void main(String[] args) {
-        int rc = new CommandLine(new Main()).execute(args);
-        System.exit(rc);
+        try{
+            GitHelper.test();
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        /*int rc = new CommandLine(new Main()).execute(args);
+        System.exit(rc);*/
     }
 
 
