@@ -33,7 +33,7 @@ en commentaire puis refaire les étapes devrait résoudre le problème.</I>
 $ statique –version
 ```
 
-Affiche la version du site statique dams le terminal
+Affiche la version du site statique dans le terminal
 ```
 $ statique init <path to the folder>
 ```
