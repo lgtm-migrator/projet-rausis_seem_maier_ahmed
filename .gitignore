@@ -1,3 +1,5 @@
-.idea/
+.idea/*
+!.idea/site
+!.idea/jacoco.exec
 target
 statique/
