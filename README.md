@@ -33,32 +33,37 @@ en commentaire puis refaire les étapes devrait résoudre le problème.</I>
 $ statique –version
 ```
 
-Cette commande  initialise un site statique dans le dossier /mon/site
+Affiche la version du site statique dams le terminal
+```
+$ statique init <path to the folder>
+```
+La commande init pourrait créer ou enrichir le dossier nommé /mon/site avec un fichier de configuration config.json contenant des informations générales liées au site (titre, description, domaine, etc.) et un fichier Markdown index.md contenant une page d’accueil avec des métadonnées et du contenu.
 
 ```
-$ statique init /mon/site
-```
-la commande init pourrait créer ou enrichir le dossier nommé /mon/site avec un fichier de configuration config.yaml contenant des informations générales liées au site (titre, description, domaine, etc.) et un fichier Markdown index.md contenant une page d’accueil avec des métadonnées et du contenu.
-
-```
-$ statique build /mon/site
+$ statique build <path to the folder> [-- watch]
 ```
 
-La commande build crée un dossier /mon/site/build contenant des fichiers HTML correspondant au contenu de chaque page du site statique. Certains fichiers comme les fichiers de configuration ne doivent pas être ajoutés au dossier build.
+La commande build crée un dossier /mon/site/build sous le répertoire dont le chemin est passé en argument  contenant des fichiers HTML correspondant au contenu de chaque page du site statique.
 
+
+
+L'option --watch : permet de régénérer le site statique à la volée, c'est-à-dire de manière automatique lorsque des changements sont effectués sur le système de fichier
 ```
 $ statique clean
 ```
 
-la commande statique clean /mon/site de manière à nettoyer le site statique. En d’autres termes, la sous-commande clean  supprime le dossier /mon/site/build.
+La commande clean  supprime le dossier /mon/site/build.
 
 ```
-$ statique statique serve /mon/site
+$ statique serve <path to the folder> [-- watch]
 ```
-l’exécution de  la commande sreve permet de  visualiser le résultat de la compilation du site Internet dans un navigateur Web.
+L’exécution de  la commande sreve permet de  visualiser le résultat de la compilation du site Internet dans un navigateur Web.
 
-```
--- watch 
-```
 
-Les commandes build et serve peuvent être appelées avec l’option “--watch” ce qui leur permet de régénérer le site statique à la volée, c'est-à-dire de manière automatique lorsque des changements sont effectués sur le système de fichier.
+
+L'option --watch : permet de régénérer le site statique à la volée, c'est-à-dire de manière automatique lorsque des changements sont effectués sur le système de fichier
+
+
+
+
+
