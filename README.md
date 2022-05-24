@@ -27,7 +27,7 @@ pour tout le monde. Cependant, il se peut que des paramètre de votre ordinateur
 une erreur indiquand que le Main est introuvable. Dans ce cas, commenter le script actuel et décommenter le script
 en commentaire puis refaire les étapes devrait résoudre le problème.</I>
 
-##Descriptif des commandes :
+## Descriptif des commandes :
 
 ```
 $ statique –version
