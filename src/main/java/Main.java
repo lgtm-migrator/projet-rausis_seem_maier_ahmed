@@ -36,6 +36,12 @@ public class Main implements Callable<Integer> {
 
     static class PropertiesVersionProvider implements IVersionProvider {
 
+        /**
+         * Méthode permettant de récupérer la version du projet dans le fichier version.txt,
+         * lequel contient une variable qui stock la version depuis le pom.xml à la compilation
+         * @return un string contenant la version du projet.
+         * @throws Exception an exception detailing what went wrong when obtaining version information
+         */
         public String[] getVersion() throws Exception {
             URL url = getClass().getResource("/version.txt");
             if (url == null) {
