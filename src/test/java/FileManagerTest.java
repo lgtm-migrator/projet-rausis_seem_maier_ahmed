@@ -29,7 +29,7 @@ class FileManagerTest {
                 fos.close();
             }
 
-            f = new File(path + File.separator + "config.yaml");
+            f = new File(path + File.separator + "config.json");
 
             if (f.createNewFile()) {
                 String content = "";
@@ -102,7 +102,7 @@ class FileManagerTest {
 
     @org.junit.jupiter.api.Test
     void testConfigurationNotCopied() {
-        assertEquals(!fileExists(path + File.separator + "build" + File.separator + "config.yaml"), true);
+        assertEquals(!fileExists(path + File.separator + "build" + File.separator + "config.json"), true);
     }
 
     @org.junit.jupiter.api.Test
