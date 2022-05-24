@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PageCompiler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo :: Maven Plugin</a> &gt; <a href="index.source.html" class="el_package">tools</a> &gt; <span class="el_source">PageCompiler.java</span></div><h1>PageCompiler.java</h1><pre class="source lang-java linenums">package tools;
+
+import java.io.File;
+import java.util.HashMap;
+
+public class PageCompiler {
+<span class="fc" id="L7">    private HashMap&lt;String, String&gt; pageParameter = new HashMap&lt;&gt;();</span>
+    public static final String LAYOUT_NAME = &quot;layout.html&quot;;
+<span class="fc" id="L9">    private final String SPLIT_PARAMETER = &quot;: &quot;;</span>
+<span class="fc" id="L10">    private final String HEADER_CONTENT_SEPARATOR = &quot;---&quot;;</span>
+<span class="fc" id="L11">    private final String SITE_PREFIXE = &quot;site&quot;;</span>
+<span class="fc" id="L12">    private final String PAGE_PREFIXE = &quot;page&quot;;</span>
+<span class="fc" id="L13">    private final String CONTENT = &quot;{{ content }}&quot;;</span>
+<span class="fc" id="L14">    private final String INCLUDE_START_REGEX = &quot;\\{\\% include&quot;;</span>
+<span class="fc" id="L15">    private final String INCLUDE_START = &quot;{% include&quot;;</span>
+<span class="fc" id="L16">    private final String INCLUDE_END = &quot;}&quot;;</span>
+<span class="fc" id="L17">    private final String PARAMETER_START = &quot;{{&quot;;</span>
+<span class="fc" id="L18">    private final String PARAMETER_START_REGEX = &quot;\\{\\{&quot;;</span>
+<span class="fc" id="L19">    private final String PARAMETER_END = &quot;}}&quot;;</span>
+    private String homeDir;
+
+<span class="fc" id="L22">    public PageCompiler(String homeDir){</span>
+<span class="fc" id="L23">        this.homeDir = homeDir;</span>
+<span class="fc" id="L24">    }</span>
+
+    /**
+     * Permet d'extraire les paramètres d'une page
+     * (le contenu passé en paramètre doit être uniquement
+     * le header de la page qui contient les paramètres)
+     * @param pageHeader le header de la page qui contient les paramètres
+     */
+    private void extractPageParameter(String pageHeader){
+<span class="fc" id="L33">        String[] rowsHeader = pageHeader.split(&quot;\n&quot;);</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        for (String row : rowsHeader) {</span>
+<span class="fc" id="L35">            String[] keyValue = row.split(SPLIT_PARAMETER);</span>
+<span class="fc" id="L36">            pageParameter.put(keyValue[0], keyValue[1]);</span>
+        }
+<span class="fc" id="L38">    }</span>
+
+    /**
+     * Retourne la valeur d'un paramètre en fonction de sa clé.
+     * En prenant en compte les préfixes (site. ou page.)
+     * @param parameterKey la valeur de la clé du paramètre
+     * @return
+     */
+    private String getParameter(String parameterKey){
+<span class="fc" id="L47">        String[] splitPrefixeKey = parameterKey.split(&quot;\\.&quot;);</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">        if(splitPrefixeKey.length &lt;= 1) return splitPrefixeKey[0];</span>
+<span class="fc" id="L49">        String prefix = splitPrefixeKey[0];</span>
+<span class="fc" id="L50">        String key = splitPrefixeKey[1];</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        if(prefix.equals(PAGE_PREFIXE)){</span>
+<span class="fc" id="L52">            return pageParameter.getOrDefault(key, parameterKey);</span>
+        }
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        if(prefix.equals(SITE_PREFIXE)) {</span>
+            //Retourne les paramtères globaux au site
+<span class="fc" id="L56">            ConfigInterpret ci = ConfigInterpret.getInstance();</span>
+<span class="fc" id="L57">            return ci.getConfig(key);</span>
+        }
+<span class="nc" id="L59">        return parameterKey;</span>
+    }
+
+    private String addIndentation(String content, String indentation){
+<span class="fc" id="L63">        StringBuilder str = new StringBuilder();</span>
+<span class="fc" id="L64">        String[] rows = content.split(&quot;\n&quot;);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        for(String row : rows){</span>
+<span class="fc" id="L66">            str.append(indentation).append(row).append(&quot;\n&quot;);</span>
+        }
+<span class="fc" id="L68">        return str.toString();</span>
+    }
+
+
+    /**
+     * Compile une page en utilisant un layout.
+     * S'il n'y a pas de fichier LAYOUT_NAME à la racine, retourne uniquement le
+     * contenu html correspondant au code markdown
+     * @param pageContent
+     * @return
+     */
+    public String compilePage(String pageContent){
+
+        //Split le header du content
+<span class="fc" id="L82">        String[] splitHeaderContent = pageContent.split(HEADER_CONTENT_SEPARATOR);</span>
+<span class="fc" id="L83">        String header = splitHeaderContent[0];</span>
+<span class="fc" id="L84">        String content = splitHeaderContent[1];</span>
+
+<span class="fc" id="L86">        extractPageParameter(header);</span>
+
+        //Récupérer le contenu du layout
+<span class="fc" id="L89">        String layoutPath = this.homeDir + File.separator + LAYOUT_NAME;</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">        if(!FileManager.fileExists(layoutPath)){</span>
+<span class="nc" id="L91">            return MarkdownToHtml.convertToHtml(content);</span>
+        }
+        try {
+<span class="fc" id="L94">            String layout = FileManager.getContent(layoutPath);</span>
+<span class="fc" id="L95">            String[] rowsLayout = layout.split(&quot;\n&quot;);</span>
+<span class="fc" id="L96">            StringBuilder finalPage = new StringBuilder();</span>
+            //Check ligne par ligne du layout s'il y a des remplacements à faire
+<span class="fc bfc" id="L98" title="All 2 branches covered.">            for(String row : rowsLayout){</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">                if(row.contains(CONTENT)){</span>
+                    //Remplacer le content
+<span class="fc" id="L101">                    String indentation = row.replace(CONTENT, &quot;&quot;);</span>
+<span class="fc" id="L102">                    finalPage.append(addIndentation(MarkdownToHtml.convertToHtml(content), indentation));</span>
+<span class="pc bpc" id="L103" title="1 of 4 branches missed.">                } else if (row.contains(INCLUDE_START) &amp;&amp; row.contains(INCLUDE_END)){</span>
+                    //Remplacer les includes
+<span class="fc" id="L105">                    String[] temp = row.split(INCLUDE_START_REGEX);</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">                    int idInclude = (temp.length &gt; 1) ? 1 : 0;</span>
+<span class="fc" id="L107">                    String include = temp[idInclude].split(INCLUDE_END)[0];</span>
+<span class="fc" id="L108">                    String fileRelativePath = include.replace(&quot; &quot;, &quot;&quot;);</span>
+<span class="fc" id="L109">                    String fileAbsolutePath = this.homeDir + File.separator + fileRelativePath;</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">                    if(FileManager.fileExists(fileAbsolutePath)) {</span>
+<span class="fc" id="L111">                        String includeContent = FileManager.getContent(fileAbsolutePath);</span>
+<span class="fc" id="L112">                        String indentation = row.replace(INCLUDE_START + include + INCLUDE_END, &quot;&quot;);</span>
+<span class="fc" id="L113">                        finalPage.append(addIndentation(includeContent, indentation));</span>
+<span class="fc" id="L114">                    } else {</span>
+<span class="nc" id="L115">                        finalPage.append(row);</span>
+                    }
+<span class="pc bpc" id="L117" title="1 of 4 branches missed.">                } else if (row.contains(PARAMETER_END) &amp;&amp; row.contains(PARAMETER_START)){</span>
+                    //Remplacer les paramètres
+<span class="fc" id="L119">                    String[] temp = row.split(PARAMETER_START_REGEX);</span>
+<span class="fc" id="L120">                    String finalRow = row;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">                    for(String part : temp){</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">                        if(part.contains(PARAMETER_END)){</span>
+<span class="fc" id="L123">                            String key = part.split(PARAMETER_END)[0];</span>
+<span class="fc" id="L124">                            String value = getParameter(key.replace(&quot; &quot;, &quot;&quot;));</span>
+<span class="fc" id="L125">                            String strReplace = PARAMETER_START + key + PARAMETER_END;</span>
+<span class="fc" id="L126">                            finalRow = finalRow.replace(strReplace, value);</span>
+                        }
+                    }
+<span class="fc" id="L129">                    finalPage.append(finalRow).append(&quot;\n&quot;);</span>
+<span class="fc" id="L130">                } else {</span>
+<span class="fc" id="L131">                    finalPage.append(row).append(&quot;\n&quot;);</span>
+                }
+            }
+            //Enlève le \n en trop
+<span class="fc" id="L135">            return finalPage.substring(0, finalPage.length() - 1);</span>
+<span class="nc" id="L136">        } catch (Exception e){</span>
+<span class="nc" id="L137">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L138">            return MarkdownToHtml.convertToHtml(content);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
