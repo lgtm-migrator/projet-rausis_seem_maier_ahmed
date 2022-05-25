@@ -88,6 +88,9 @@ public class GitHelper {
         System.out.print("Entrer l'url du répertoire git distant: ");
         String str= sc.nextLine();
         config.setString("remote", "origin", "url", str);
+        try {
+            config.save();
+        } catch (Exception e){}
     }
 
     /**
@@ -99,6 +102,9 @@ public class GitHelper {
         System.out.print("Entrer le token pour s'authentifier: ");
         String str= sc.nextLine();
         config.setString("credentials", "token", "token", str);
+        try {
+            config.save();
+        } catch (Exception e){}
     }
 
     /**
@@ -114,6 +120,9 @@ public class GitHelper {
      */
     private void delSavedRemoteUrl(){
         config.setString("remote", "origin", "url", null);
+        try {
+            config.save();
+        } catch (Exception e){}
     }
 
     /**
@@ -121,30 +130,8 @@ public class GitHelper {
      */
     private void delSavedCredentials(){
         config.setString("credentials", "token", "token", null);
-    }
-
-    static public void test() throws GitAPIException, IOException {
-        File dir = new File("../test");
-        Git git = Git.init().setDirectory(dir).call();
-
-        //Set remote origin
-        StoredConfig config = git.getRepository().getConfig();
-        /*config.setString("remote", "origin", "url", remoteUrl);
-        config.setString("credentials", "token", "token", token);
-        config.save();*/
-
-        String test = config.getString("credentials", "token", "tokenasdf");
-
-        /*String tokenTest = config.getString("credentials", "token", "token");
-        CredentialsProvider credentialsProvider = new UsernamePasswordCredentialsProvider(tokenTest, "");
-
-        AddCommand add = git.add();
-        add.addFilepattern(".").call();
-        CommitCommand commit = git.commit();
-        commit.setMessage("test commit").call();
-
-        PushCommand push = git.push();
-        push.setCredentialsProvider(credentialsProvider);
-        push.call();*/
+        try {
+            config.save();
+        } catch (Exception e){}
     }
 }
