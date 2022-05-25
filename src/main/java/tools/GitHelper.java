@@ -19,6 +19,7 @@ public class GitHelper {
      * @param directory le répertoire à push
      */
     public GitHelper(String directory){
+        this.directory = directory;
     }
 
     /**
@@ -60,6 +61,28 @@ public class GitHelper {
      * (Demande uniquement le token)
      */
     private void askAndSaveCredentails(){
+
+    }
+
+    /**
+     * Suprpime les crédentials et l'url du répo enregistrés
+     */
+    private void dalSaveRemoteUrlAndCredentials(){
+        delSavedCredentials();
+        delSavedRemoteUrl();
+    }
+
+    /**
+     * Supprime l'url du répo enregistré
+     */
+    private void delSavedRemoteUrl(){
+
+    }
+
+    /**
+     * Supprime les crédentials enregistrés
+     */
+    private void delSavedCredentials(){
 
     }
 
