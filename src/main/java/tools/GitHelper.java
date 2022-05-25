@@ -1,9 +1,6 @@
 package tools;
 
-import org.eclipse.jgit.api.AddCommand;
-import org.eclipse.jgit.api.CommitCommand;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.LsRemoteCommand;
+import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
@@ -15,7 +12,7 @@ import java.io.IOException;
 
 public class GitHelper {
     final static String remoteUrl = "https://github.com/justinrausis/testRepo.git";
-    final static String token = "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";
+    final static String token = "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";
 
     static public void test() throws GitAPIException, IOException {
         File dir = new File("../test");
@@ -23,14 +20,20 @@ public class GitHelper {
 
         //Set remote origin
         StoredConfig config = git.getRepository().getConfig();
-        config.setString("remote", "origin", "url", remoteUrl);
-        config.save();
+        /*config.setString("remote", "origin", "url", remoteUrl);
+        config.setString("credentials", "token", "token", token);
+        config.save();*/
 
+        String tokenTest = config.getString("credentials", "token", "token");
+        CredentialsProvider credentialsProvider = new UsernamePasswordCredentialsProvider(tokenTest, "");
 
         AddCommand add = git.add();
         add.addFilepattern(".").call();
         CommitCommand commit = git.commit();
-        commit.setMessage("initial commit").call();
-        git.push().call();
+        commit.setMessage("test commit").call();
+
+        PushCommand push = git.push();
+        push.setCredentialsProvider(credentialsProvider);
+        push.call();
     }
 }
