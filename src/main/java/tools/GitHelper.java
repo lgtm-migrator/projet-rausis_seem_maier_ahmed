@@ -73,7 +73,7 @@ public class GitHelper {
 
     /**
      * Check si des crédentials sont enregistrés
-     * @return tru si des crédentials sont enregistrés
+     * @return true si des crédentials sont enregistrés
      */
     private boolean hasCredentials(){
         String token = config.getString("credentials", "token", "token");
