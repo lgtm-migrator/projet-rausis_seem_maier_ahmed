@@ -1,3 +1,6 @@
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
 import java.util.concurrent.Callable;
 
 import Subcommands.*;
@@ -10,6 +13,7 @@ import tools.*;
     New.class,
     Init.class,
     Clean.class,
+        Serve.class
 })
 
 public class Main implements Callable<Integer> {
@@ -20,9 +24,12 @@ public class Main implements Callable<Integer> {
         return 0;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         int rc = new CommandLine(new Main()).execute(args);
-        System.exit(rc);
+        if (rc != 0) {
+            System.exit(rc);
+        }
+        Desktop.getDesktop().browse(URI.create("http://localhost:1234"));
     }
 
 

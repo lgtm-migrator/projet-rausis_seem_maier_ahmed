@@ -14,8 +14,11 @@ import io.javalin.Javalin;
 @Command(name = "serve", description = "Open(Serve) the staic site in a navigator")
 public class Serve implements Callable<Integer> {
     // (the url of the site)
+    @CommandLine.Parameters(index = "0", description = "The path to the folder.")
     public Path site;
     int port = 1234;
+
+    @Override
     public Integer call() {
         //build
         new CommandLine(new Build()).execute(site.toString());
