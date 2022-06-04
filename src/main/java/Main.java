@@ -1,10 +1,10 @@
 import java.util.concurrent.Callable;
 
-import Subcommands.Build;
-import Subcommands.New;
+import Subcommands.*;
 
 import java.net.URL;
 import java.util.Properties;
+
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.IVersionProvider;
@@ -14,7 +14,10 @@ import picocli.CommandLine.Option;
          description = "C'est un site statique",
          subcommands = {
                         Build.class,
-                        New.class
+                        New.class,
+                         Init.class,
+                         Clean.class,
+                         Publish.class,
                        },
          versionProvider = Main.PropertiesVersionProvider.class)
 
