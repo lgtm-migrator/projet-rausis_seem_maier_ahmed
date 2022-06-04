@@ -16,7 +16,7 @@ public class Clean implements Callable<Integer> {
     @Override public Integer call() {
         String longPath = System.getProperty("user.dir") + File.separator + path + File.separator + "build";;
         FileManager f = new FileManager();
-        f.deleteRecursive(new File(longPath));
+        f.deleteRecursive(longPath);
         return 0;
     }
 }

@@ -61,12 +61,25 @@ public class FileManager {
     }
 
     /**
+     * Vérifie que le fichier spécifier est un dossier
+     * Si le fichier n'existe pas retourne false
+     * @param path Le chemin absolu du fichier à vérifier
+     * @return true si le fichier est un dossier
+     */
+    public static boolean isDirectory(String path){
+        if(!fileExists(path)) return false;
+        File f = new File(path);
+        return f.isDirectory();
+    }
+
+    /**
      * Permet de récupérer le contenu d'un fichier
      * @param path le chemin absolu du fichier à récupérer le contenu
      * @return String le contenu du fichier ou null si le fichier n'existe pas ou qu'il y ait eu une erreur
      */
     public static String getContent(String path){
         if(!fileExists(path)) return null;
+        if(isDirectory(path)) return null;
         try {
             InputStream in = new BufferedInputStream(new FileInputStream(path));
             StringBuilder content = new StringBuilder();
@@ -92,27 +105,10 @@ public class FileManager {
      * @param to Le chemin absolu de l'endroit ou le copier
      * @return true si la copie est un succès
      */
-    private static boolean copyFile(String from, String to) {
-        try {
-            File f = new File(to);
-            if (f.createNewFile()) {
-                InputStream in = new BufferedInputStream(new FileInputStream(from));
-                OutputStream out = new BufferedOutputStream(new FileOutputStream(f));
-
-                byte[] buffer = new byte[1024];
-                int lengthRead;
-                while ((lengthRead = in.read(buffer)) > 0) {
-                    out.write(buffer, 0, lengthRead);
-                    out.flush();
-                }
-                out.close();
-                in.close();
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            return false;
-        }
+    public static boolean copyFile(String from, String to) {
+        if(!fileExists(from) || isDirectory(from)) return false;
+        String content = getContent(from);
+        createFile(to, content);
         return true;
     }
 
@@ -122,7 +118,7 @@ public class FileManager {
      * @param initPath La racine
      * @return String le chemin absolu
      */
-    private static String getRelativePath(String absolutePath, String initPath){
+    public static String getRelativePath(String absolutePath, String initPath){
         return absolutePath.substring(initPath.length(), absolutePath.length());
     }
 
@@ -178,7 +174,7 @@ public class FileManager {
 
         String buildPath = path + File.separator + "build";
         //Supprime le dossier build s'il existe
-        if(fileExists(buildPath)) deleteRecursive(new File(buildPath));
+        if(fileExists(buildPath)) deleteRecursive(buildPath);
 
         createDirectory(buildPath);
 
@@ -255,7 +251,7 @@ public class FileManager {
      * Supprime de manière récursive un répertoire
      * @param directoryToBeDeleted le répertoire à supprimer
      */
-    public static void deleteRecursive(File directoryToBeDeleted){
+    private static void deleteRecursive(File directoryToBeDeleted){
         File[] allContents = directoryToBeDeleted.listFiles();
         if (allContents != null) {
             for (File file : allContents) {
@@ -263,5 +259,13 @@ public class FileManager {
             }
         }
         directoryToBeDeleted.delete();
+    }
+
+    /**
+     * Supprime un dossier de manière récursive
+     * @param path Le chemin absolu au dossier
+     */
+    public static void deleteRecursive(String path){
+        if(fileExists(path)) deleteRecursive(new File(path));
     }
 }

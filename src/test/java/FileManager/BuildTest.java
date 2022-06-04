@@ -31,7 +31,7 @@ class BuildTest {
     @org.junit.jupiter.api.AfterEach
     void tearDown() {
         //Suppression du dossier test
-        FileManager.deleteRecursive(new File(path));
+        FileManager.deleteRecursive(path);
     }
 
     /* Test que le dossier build contienne les bons fichiers

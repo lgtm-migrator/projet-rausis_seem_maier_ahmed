@@ -1,3 +1,5 @@
+package FileManager;
+
 import tools.FileManager;
 
 import java.io.File;
@@ -22,7 +24,7 @@ public class InitTest {
     // le code dans cette méthode est exécuté après chaque test
     @org.junit.jupiter.api.AfterEach
     void tearDown() {
-        f.deleteRecursive(new File(path));
+        f.deleteRecursive(path);
     }
 
 
