@@ -3,3 +3,4 @@ target/*
 !target/site
 !target/jacoco.exec
 statique/
+Projet.iml
