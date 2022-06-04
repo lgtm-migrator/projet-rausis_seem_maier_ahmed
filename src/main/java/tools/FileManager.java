@@ -7,7 +7,7 @@ import java.nio.file.*;
 public class FileManager {
     private final static String CONFIG_FILENAME = "config.json";
     private final static String LAYOUT_FILENAME = "layout.html";
-    public boolean createFile(String path, String content) {
+    public static boolean createFile(String path, String content) {
         try {
             File f = new File(path);
 
@@ -24,7 +24,7 @@ public class FileManager {
         return true;
     }
 
-    public boolean createDirectory(String path) {
+    public static boolean createDirectory(String path) {
         try {
 
             Path p = Paths.get(path);
@@ -58,7 +58,7 @@ public class FileManager {
         return content.toString();
     }
 
-    private boolean copyFile(String from, String to) {
+    private static boolean copyFile(String from, String to) {
         try {
             File f = new File(to);
             if (f.createNewFile()) {
@@ -82,11 +82,11 @@ public class FileManager {
         return true;
     }
 
-    private String getRelativePath(String absolutePath, String initPath){
+    private static String getRelativePath(String absolutePath, String initPath){
         return absolutePath.substring(initPath.length(), absolutePath.length());
     }
 
-    private boolean buildRecursive(File directory, String initPath, String initPathBuild){
+    private static boolean buildRecursive(File directory, String initPath, String initPathBuild){
         for (final File fileEntry : directory.listFiles()) {
             if (fileEntry.isDirectory()) {
                 if(!fileEntry.getName().equals("build")) {
@@ -117,7 +117,7 @@ public class FileManager {
         return true;
     }
 
-    public boolean build(String path){
+    public static boolean build(String path){
         // Vérifie que les fichiers index et config existes
         if(!fileExists(path + File.separator + "index.md")){
             System.out.println("Le fichier index.md est manquant");
@@ -143,7 +143,7 @@ public class FileManager {
      * et de re-build lorsqu'il y a un changement de fichier
      * @param path le dossier à écouter
      */
-    public void watch(String path){
+    public static void watch(String path){
         try {
             WatcherRecursive wr = new WatcherRecursive(path);
             wr.watch(new WatcherRecursive.SignalChange() {
@@ -176,7 +176,7 @@ public class FileManager {
      * Permet de générer les premiers fichiers à un endroit particuler
      * @param path le chemin ou générer les fichiers
      */
-    public boolean init(String path) {
+    public static boolean init(String path) {
         //Vérifie que le répertoire fournit existe vraiment
         if(!fileExists(path)) return false;
 
@@ -208,7 +208,7 @@ public class FileManager {
      * Supprime de manière récursive un répertoire
      * @param directoryToBeDeleted le répertoire à supprimer
      */
-    public void deleteRecursive(File directoryToBeDeleted){
+    public static void deleteRecursive(File directoryToBeDeleted){
         File[] allContents = directoryToBeDeleted.listFiles();
         if (allContents != null) {
             for (File file : allContents) {
