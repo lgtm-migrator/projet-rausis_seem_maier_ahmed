@@ -63,22 +63,27 @@ public class FileManager {
     /**
      * Permet de récupérer le contenu d'un fichier
      * @param path le chemin absolu du fichier à récupérer le contenu
-     * @return String le contenu du fichier
-     * @throws IOException Peut lever une exception lors de l'ouverture du fichier
+     * @return String le contenu du fichier ou null si le fichier n'existe pas ou qu'il y ait eu une erreur
      */
-    public static String getContent(String path) throws IOException {
-        InputStream in = new BufferedInputStream(new FileInputStream(path));
-        StringBuilder content = new StringBuilder();
+    public static String getContent(String path){
+        if(!fileExists(path)) return null;
+        try {
+            InputStream in = new BufferedInputStream(new FileInputStream(path));
+            StringBuilder content = new StringBuilder();
 
 
-        byte[] buffer = new byte[1024];
-        int lengthRead;
-        while ((lengthRead = in.read(buffer)) > 0) {
-            String append = new String(buffer, 0, lengthRead, StandardCharsets.UTF_8);
-            content.append(append);
+            byte[] buffer = new byte[1024];
+            int lengthRead;
+            while ((lengthRead = in.read(buffer)) > 0) {
+                String append = new String(buffer, 0, lengthRead, StandardCharsets.UTF_8);
+                content.append(append);
+            }
+            in.close();
+            return content.toString();
+        } catch (Exception e){
+            System.out.println("Une erreur s'est produite lors de FileManager.getContent: " + e.getMessage());
         }
-        in.close();
-        return content.toString();
+        return null;
     }
 
     /**
@@ -143,12 +148,7 @@ public class FileManager {
                 } else if(fileEntry.getName().contains("md")){
                     String temppath = initPathBuild + getRelativePath(fileEntry.getPath(), initPath);
                     String content = "";
-                    try {
-                        content = getContent(fileEntry.getPath());
-                    } catch(Exception e){
-                        System.out.println(e.getMessage());
-                        return false;
-                    }
+                    content = getContent(fileEntry.getPath());
                     MarkdownToHtml m = new MarkdownToHtml();
                     createFile(temppath.replace("md", "html"), m.convertToHtml(content));
                 } else {

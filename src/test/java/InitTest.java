@@ -43,12 +43,8 @@ public class InitTest {
                 "## Mon sous-titre\n" +
                 "Le contenu de mon article.\n" +
                 "![Une image](./image.png)";
-        try {
-            String content = f.getContent(path + File.separator + "index.md");
-            assertEquals(content, correctContent);
-        } catch(Exception e){
-            assert(false);
-        }
+        String content = f.getContent(path + File.separator + "index.md");
+        assertEquals(content, correctContent);
     }
 
     @org.junit.jupiter.api.Test
@@ -58,13 +54,7 @@ public class InitTest {
                 "   domaine: www.mon-site.com\n" +
                 "   titre: \"Mon site\"" +
                 "}";
-        try {
-            String content = f.getContent(path + File.separator + "config.json");
-            assertEquals(content, correctContent);
-        } catch(Exception e){
-            assert(false);
-        }
+        String content = f.getContent(path + File.separator + "config.json");
+        assertEquals(content, correctContent);
     }
-
-
 }

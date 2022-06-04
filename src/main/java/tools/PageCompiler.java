@@ -90,52 +90,48 @@ public class PageCompiler {
         if(!FileManager.fileExists(layoutPath)){
             return MarkdownToHtml.convertToHtml(content);
         }
-        try {
-            String layout = FileManager.getContent(layoutPath);
-            String[] rowsLayout = layout.split("\n");
-            StringBuilder finalPage = new StringBuilder();
-            //Check ligne par ligne du layout s'il y a des remplacements à faire
-            for(String row : rowsLayout){
-                if(row.contains(CONTENT)){
-                    //Remplacer le content
-                    String indentation = row.replace(CONTENT, "");
-                    finalPage.append(addIndentation(MarkdownToHtml.convertToHtml(content), indentation));
-                } else if (row.contains(INCLUDE_START) && row.contains(INCLUDE_END)){
-                    //Remplacer les includes
-                    String[] temp = row.split(INCLUDE_START_REGEX);
-                    int idInclude = (temp.length > 1) ? 1 : 0;
-                    String include = temp[idInclude].split(INCLUDE_END)[0];
-                    String fileRelativePath = include.replace(" ", "");
-                    String fileAbsolutePath = this.homeDir + File.separator + fileRelativePath;
-                    if(FileManager.fileExists(fileAbsolutePath)) {
-                        String includeContent = FileManager.getContent(fileAbsolutePath);
-                        String indentation = row.replace(INCLUDE_START + include + INCLUDE_END, "");
-                        finalPage.append(addIndentation(includeContent, indentation));
-                    } else {
-                        finalPage.append(row);
-                    }
-                } else if (row.contains(PARAMETER_END) && row.contains(PARAMETER_START)){
-                    //Remplacer les paramètres
-                    String[] temp = row.split(PARAMETER_START_REGEX);
-                    String finalRow = row;
-                    for(String part : temp){
-                        if(part.contains(PARAMETER_END)){
-                            String key = part.split(PARAMETER_END)[0];
-                            String value = getParameter(key.replace(" ", ""));
-                            String strReplace = PARAMETER_START + key + PARAMETER_END;
-                            finalRow = finalRow.replace(strReplace, value);
-                        }
-                    }
-                    finalPage.append(finalRow).append("\n");
+        String layout = FileManager.getContent(layoutPath);
+        String[] rowsLayout = layout.split("\n");
+        StringBuilder finalPage = new StringBuilder();
+        //Check ligne par ligne du layout s'il y a des remplacements à faire
+        for(String row : rowsLayout){
+            if(row.contains(CONTENT)){
+                //Remplacer le content
+                String indentation = row.replace(CONTENT, "");
+                finalPage.append(addIndentation(MarkdownToHtml.convertToHtml(content), indentation));
+            } else if (row.contains(INCLUDE_START) && row.contains(INCLUDE_END)){
+                //Remplacer les includes
+                String[] temp = row.split(INCLUDE_START_REGEX);
+                int idInclude = (temp.length > 1) ? 1 : 0;
+                String include = temp[idInclude].split(INCLUDE_END)[0];
+                String fileRelativePath = include.replace(" ", "");
+                String fileAbsolutePath = this.homeDir + File.separator + fileRelativePath;
+                if(FileManager.fileExists(fileAbsolutePath)) {
+                    String includeContent = FileManager.getContent(fileAbsolutePath);
+                    String indentation = row.replace(INCLUDE_START + include + INCLUDE_END, "");
+                    finalPage.append(addIndentation(includeContent, indentation));
                 } else {
-                    finalPage.append(row).append("\n");
+                    finalPage.append(row);
                 }
+            } else if (row.contains(PARAMETER_END) && row.contains(PARAMETER_START)){
+                //Remplacer les paramètres
+                String[] temp = row.split(PARAMETER_START_REGEX);
+                String finalRow = row;
+                for(String part : temp){
+                    if(part.contains(PARAMETER_END)){
+                        String key = part.split(PARAMETER_END)[0];
+                        String value = getParameter(key.replace(" ", ""));
+                        String strReplace = PARAMETER_START + key + PARAMETER_END;
+                        finalRow = finalRow.replace(strReplace, value);
+                    }
+                }
+                finalPage.append(finalRow).append("\n");
+            } else {
+                finalPage.append(row).append("\n");
             }
-            //Enlève le \n en trop
-            return finalPage.substring(0, finalPage.length() - 1);
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-            return MarkdownToHtml.convertToHtml(content);
         }
+        //Enlève le \n en trop
+        return finalPage.substring(0, finalPage.length() - 1);
+
     }
 }

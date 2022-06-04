@@ -45,11 +45,7 @@ class BuildTest {
     void testIndexHtmlExists() {
         String p = buildPath + File.separator + "index.html";
         assertTrue(FileManager.fileExists(p),"Vérifie que le fichier index.html existe");
-        try{
-            assertEquals(FileManager.getContent(p), "<h1>Index</h1>\n", "Vérifie le contenu du fichier index.html");
-        } catch (Exception e){
-            fail("Une erreur s'est produite lors de FileManager.getContent");
-        }
+        assertEquals(FileManager.getContent(p), "<h1>Index</h1>\n", "Vérifie le contenu du fichier index.html");
     }
 
     @org.junit.jupiter.api.Test
@@ -67,24 +63,13 @@ class BuildTest {
     void testPageHtmlExists() {
         String p = buildSubDirectory + File.separator + "page.html";
         assertTrue(FileManager.fileExists(p), "Vérifie que page.html existe");
-        try{
-            assertEquals(FileManager.getContent(p), "<h1>Page</h1>\n", "Vérifie le contenu de page.html");
-        } catch (Exception e){
-            fail("Une erreur s'est produite lors du FileManager.getContent");
-        }
+        assertEquals(FileManager.getContent(p), "<h1>Page</h1>\n", "Vérifie le contenu de page.html");
     }
 
     @org.junit.jupiter.api.Test
     void testImageJpgCopied() {
         String p = buildSubDirectory + File.separator + "image.jpg";
         assertTrue(FileManager.fileExists( p), "Vérifie que le fichier image.jpg existe");
-        try{
-            assertEquals(FileManager.getContent(p), "Image", "Vérifie le contenu du fichier image.jpg");
-        } catch (Exception e){
-            fail("Une erreur s'est produite lors du FileManager.getContent");
-        }
+        assertEquals(FileManager.getContent(p), "Image", "Vérifie le contenu du fichier image.jpg");
     }
-
-
-
 }
