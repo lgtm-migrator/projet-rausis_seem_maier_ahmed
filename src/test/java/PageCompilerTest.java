@@ -61,22 +61,11 @@ public class PageCompilerTest {
         ConfigInterpret.config("{titre: Mon site}");
     }
 
-    void deleteDirectory(File directoryToBeDeleted) {
-        File[] allContents = directoryToBeDeleted.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirectory(file);
-            }
-        }
-        directoryToBeDeleted.delete();
-    }
-
     // le code dans cette méthode est exécuté après chaque test
     @org.junit.jupiter.api.AfterEach
     void tearDown() {
         //Suppression du dossier test
-        File file = new File(path);
-        deleteDirectory(file);
+        FileManager.deleteRecursive(path);
     }
 
     @org.junit.jupiter.api.Test

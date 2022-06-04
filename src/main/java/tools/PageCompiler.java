@@ -3,6 +3,11 @@ package tools;
 import java.io.File;
 import java.util.HashMap;
 
+/**
+ * Cette classe permet de "compiler" une page html
+ * Elle va extraire les paramètres du fichier md et les injecters dans les métas data
+ * cette classe permet aussi de gérer la notion de layout.
+ */
 public class PageCompiler {
     private HashMap<String, String> pageParameter = new HashMap<>();
     public static final String LAYOUT_NAME = "layout.html";
