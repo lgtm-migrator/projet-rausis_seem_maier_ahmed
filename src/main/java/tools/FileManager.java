@@ -2,19 +2,12 @@ package tools;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 
 public class FileManager {
-    /**
-     * Créer un fichier à un certain endroit et avec un certain contenu
-     * @param path l'endroit ou créer le fichier
-     * @param content le contenu du fichier
-     * @return Vrai si la création du fichier est un succès
-     */
-    private boolean createFile(String path, String content) {
+    private final static String CONFIG_FILENAME = "config.json";
+    private final static String LAYOUT_FILENAME = "layout.html";
+    public boolean createFile(String path, String content) {
         try {
             File f = new File(path);
 
@@ -31,12 +24,7 @@ public class FileManager {
         return true;
     }
 
-    /**
-     * Créer le répertoire path
-     * @param path le répertoire à créer (chemin absolue)
-     * @return
-     */
-    private boolean createDirectory(String path) {
+    public boolean createDirectory(String path) {
         try {
 
             Path p = Paths.get(path);
@@ -50,23 +38,12 @@ public class FileManager {
         return true;
     }
 
-    /**
-     * Vérifie si un fichier existe
-     * @param path le chemin du fichier à vérifier
-     * @return vrai s'il existe
-     */
-    private boolean fileExists(String path){
+    public static boolean fileExists(String path){
         File file = new File(path);
         return file.exists();
     }
 
-    /**
-     * Permet de récupére le contenu d'un fichier
-     * @param path le chemin du fichier à récupérer le contenu
-     * @return le contenu du fichier
-     * @throws IOException
-     */
-    private String getContent(String path) throws IOException {
+    public static String getContent(String path) throws IOException {
         InputStream in = new BufferedInputStream(new FileInputStream(path));
         StringBuilder content = new StringBuilder();
 
@@ -81,12 +58,6 @@ public class FileManager {
         return content.toString();
     }
 
-    /**
-     * Permet de copier un fichier (from) à un autre endroit (to)
-     * @param from le fichier source
-     * @param to le nouveau fichier
-     * @return
-     */
     private boolean copyFile(String from, String to) {
         try {
             File f = new File(to);
@@ -111,23 +82,10 @@ public class FileManager {
         return true;
     }
 
-    /**
-     * Permet de récupérer un lien relatif depuis un lien absolue et la référence
-     * @param absolutePath le lien absolue
-     * @param initPath la référence
-     * @return
-     */
     private String getRelativePath(String absolutePath, String initPath){
         return absolutePath.substring(initPath.length(), absolutePath.length());
     }
 
-    /**
-     * Gère le processus du build (de manière récursive s'il y a des sous dossiers)
-     * @param directory le répertoire à traiter (peut être un sous-répertoire)
-     * @param initPath le path initiale (ou le build à été lancé)
-     * @param initPathBuild le path du build (en générale initPath + "/build")
-     * @return Vrai si le build est réussi
-     */
     private boolean buildRecursive(File directory, String initPath, String initPathBuild){
         for (final File fileEntry : directory.listFiles()) {
             if (fileEntry.isDirectory()) {
@@ -138,8 +96,8 @@ public class FileManager {
                     }
                 }
             } else {
-                if(fileEntry.getName().contains("yaml")){
-                    //Ignorer les fichiers yaml
+                if(fileEntry.getName().contains("config.json")){
+                    //Ignorer le fichier config.json
                 } else if(fileEntry.getName().contains("md")){
                     String temppath = initPathBuild + getRelativePath(fileEntry.getPath(), initPath);
                     String content = "";
@@ -159,25 +117,104 @@ public class FileManager {
         return true;
     }
 
-    /**
-     * Permet de faire les premières actions du build
-     * (vérification des fichiers obligatoires, TODO: load du fichier de config
-     * @param path le dossier à "build"
-     * @return vrai si le build est un succès
-     */
     public boolean build(String path){
+        // Vérifie que les fichiers index et config existes
         if(!fileExists(path + File.separator + "index.md")){
             System.out.println("Le fichier index.md est manquant");
             return false;
         }
 
-        if(!fileExists(path + File.separator + "config.yaml")){
-            System.out.println("Le fichier config.yaml est manquant");
+        if(!fileExists(path + File.separator + "config.json")){
+            System.out.println("Le fichier config.json est manquant");
             return false;
         }
 
-        createDirectory(path + File.separator + "build");
+        String buildPath = path + File.separator + "build";
+        //Supprime le dossier build s'il existe
+        if(fileExists(buildPath)) deleteRecursive(new File(buildPath));
+
+        createDirectory(buildPath);
 
         return buildRecursive(new File(path), path, path + File.separator + "build");
+    }
+
+    /**
+     * Permet d'écouter les changements dans le dossier path
+     * et de re-build lorsqu'il y a un changement de fichier
+     * @param path le dossier à écouter
+     */
+    public void watch(String path){
+        try {
+            WatcherRecursive wr = new WatcherRecursive(path);
+            wr.watch(new WatcherRecursive.SignalChange() {
+                @Override
+                public void change(WatchKey key) throws InterruptedException {
+                    for(WatchEvent<?> event : key.pollEvents()) {
+                        String fileName = event.context().toString();
+                        if(!fileName.equals("build")) {
+                            /*
+                            Le rebuild pourrait être optimisé en remplaçant dans le dossier
+                            build uniquement les fichiers impactés par la modification du
+                            fichier x ou y.
+                            */
+                            System.out.println("Reconstruction ...");
+                            if(build(path)){
+                                System.out.println("Fin de la reconstruction");
+                            } else {
+                                System.out.println("Reconstruction interrompue");
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Permet de générer les premiers fichiers à un endroit particuler
+     * @param path le chemin ou générer les fichiers
+     */
+    public boolean init(String path) {
+        //Vérifie que le répertoire fournit existe vraiment
+        if(!fileExists(path)) return false;
+
+        //Créer le fichier index.md
+        boolean createIndex = createFile(path + File.separator + "index.md",
+                "titre: Mon premier article\n" +
+                "auteur: Bertil Chapuis\n" +
+                "date: 2021-03-10\n" +
+                "---\n" +
+                "# Mon titre\n" +
+                "## Mon sous-titre\n" +
+                "Le contenu de mon article.\n" +
+                "![Une image](./image.png)"
+        );
+        if(!createIndex) return false;
+
+        //Créer le fichier config.json
+        boolean createConfig = createFile(path + File.separator + "config.json",
+                "{" +
+                        "   domaine: www.mon-site.com\n" +
+                        "   titre: \"Mon site\"" +
+                        "}"
+        );
+        if(!createConfig) return false;
+        return true;
+    }
+
+    /**
+     * Supprime de manière récursive un répertoire
+     * @param directoryToBeDeleted le répertoire à supprimer
+     */
+    public void deleteRecursive(File directoryToBeDeleted){
+        File[] allContents = directoryToBeDeleted.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteRecursive(file);
+            }
+        }
+        directoryToBeDeleted.delete();
     }
 }
