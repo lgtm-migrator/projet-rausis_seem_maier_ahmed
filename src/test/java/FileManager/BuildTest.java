@@ -3,26 +3,25 @@ package FileManager;
 import tools.FileManager;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class BuildTest {
-    String path = System.getProperty("user.dir")+ File.separator + "src" + File.separator + "test" + File.separator + "FileManager.FileManagerTest";
+    private final String path = System.getProperty("user.dir")+ File.separator + "src" + File.separator + "test" + File.separator + "FileManagerTest";
+    private final String subDirectory = path + File.separator + "page";
+    private final String buildPath = path + File.separator + "build";
+    private final String buildSubDirectory = buildPath + File.separator + "page";
     // le code dans cette méthode est exécuté avant chaque test
     @org.junit.jupiter.api.BeforeEach
     void setUp() {
         //Création du dossier de test
         FileManager.createDirectory(path);
-        FileManager.createFile(path + File.separator + "index.md", "#Index");
+        FileManager.createFile(path + File.separator + "index.md", "# Index");
         FileManager.createFile(path + File.separator + "config.json", "");
 
-        String subDirectory = path + File.separator + "page";
         FileManager.createDirectory(subDirectory);
-        FileManager.createFile(subDirectory + File.separator + "page.md", "#Page");
-        FileManager.createFile(subDirectory + File.separator + "image.jpg", "image");
+        FileManager.createFile(subDirectory + File.separator + "page.md", "# Page");
+        FileManager.createFile(subDirectory + File.separator + "image.jpg", "Image");
 
         //Build du dossier de test
         FileManager.build(path);
@@ -35,34 +34,57 @@ class BuildTest {
         FileManager.deleteRecursive(new File(path));
     }
 
+    /* Test que le dossier build contienne les bons fichiers
+    *  Et qu'ils aient les bonnes valeurs */
     @org.junit.jupiter.api.Test
     void testFolderBuildExists() {
-        assertTrue(FileManager.fileExists(path + File.separator + "build"));
+        assertTrue(FileManager.fileExists(buildPath), "Vérifie que le répertoire build existe");
     }
 
     @org.junit.jupiter.api.Test
     void testIndexHtmlExists() {
-        assertTrue(FileManager.fileExists(path + File.separator + "build" + File.separator + "index.html"));
+        String p = buildPath + File.separator + "index.html";
+        assertTrue(FileManager.fileExists(p),"Vérifie que le fichier index.html existe");
+        try{
+            assertEquals(FileManager.getContent(p), "<h1>Index</h1>\n", "Vérifie le contenu du fichier index.html");
+        } catch (Exception e){
+            fail("Une erreur s'est produite lors de FileManager.getContent");
+        }
     }
 
     @org.junit.jupiter.api.Test
     void testConfigurationNotCopied() {
-        assertFalse(FileManager.fileExists(path + File.separator + "build" + File.separator + "config.json"));
+        String p = buildPath + File.separator + "config.json";
+        assertFalse(FileManager.fileExists(p), "Vérifie que le fichier config ne s'est pas copié dans le dossier build");
     }
 
     @org.junit.jupiter.api.Test
     void testFolderPageExists() {
-        assertTrue(FileManager.fileExists(path + File.separator + "build" + File.separator + "page"));
+        assertTrue(FileManager.fileExists(buildSubDirectory), "Vérifie que le sous-répertoire page existe");
     }
 
     @org.junit.jupiter.api.Test
     void testPageHtmlExists() {
-        assertTrue(FileManager.fileExists(path + File.separator + "build" + File.separator + "page" + File.separator + "page.html"));
+        String p = buildSubDirectory + File.separator + "page.html";
+        assertTrue(FileManager.fileExists(p), "Vérifie que page.html existe");
+        try{
+            assertEquals(FileManager.getContent(p), "<h1>Page</h1>\n", "Vérifie le contenu de page.html");
+        } catch (Exception e){
+            fail("Une erreur s'est produite lors du FileManager.getContent");
+        }
     }
 
     @org.junit.jupiter.api.Test
     void testImageJpgCopied() {
-        assertTrue(FileManager.fileExists(path + File.separator + "build" + File.separator + "page" + File.separator + "image.jpg"));
+        String p = buildSubDirectory + File.separator + "image.jpg";
+        assertTrue(FileManager.fileExists( p), "Vérifie que le fichier image.jpg existe");
+        try{
+            assertEquals(FileManager.getContent(p), "Image", "Vérifie le contenu du fichier image.jpg");
+        } catch (Exception e){
+            fail("Une erreur s'est produite lors du FileManager.getContent");
+        }
     }
+
+
 
 }
