@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Main.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo :: Maven Plugin</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Main.java</span></div><h1>Main.java</h1><pre class="source lang-java linenums">import java.util.concurrent.Callable;
+
+import Subcommands.*;
+
+import java.net.URL;
+import java.util.Properties;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.IVersionProvider;
+import picocli.CommandLine.Option;
+
+@Command(name=&quot;Main&quot;,
+         description = &quot;C'est un site statique&quot;,
+         subcommands = {
+                        Build.class,
+                        New.class,
+                         Init.class,
+                         Clean.class,
+                         Publish.class,
+                       },
+         versionProvider = Main.PropertiesVersionProvider.class)
+
+<span class="nc" id="L24">public class Main implements Callable&lt;Integer&gt; {</span>
+
+    @Option(names = {&quot;-V&quot;, &quot;-version&quot;}, versionHelp = true, description = &quot;Print version info and exit&quot;)
+    boolean versionRequested;
+
+    @Override
+    public Integer call() {
+<span class="nc" id="L31">        System.out.println(&quot;Mesage au démarrage&quot;);</span>
+<span class="nc" id="L32">        return 0;</span>
+    }
+
+    public static void main(String[] args) {
+<span class="nc" id="L36">        int rc = new CommandLine(new Main()).execute(args);</span>
+<span class="nc" id="L37">        System.exit(rc);</span>
+<span class="nc" id="L38">    }</span>
+
+<span class="nc" id="L40">    static class PropertiesVersionProvider implements IVersionProvider {</span>
+
+        /**
+         * Méthode permettant de récupérer la version du projet dans le fichier version.txt,
+         * lequel contient une variable qui stock la version depuis le pom.xml à la compilation
+         * @return un string contenant la version du projet.
+         * @throws Exception an exception detailing what went wrong when obtaining version information
+         */
+        public String[] getVersion() throws Exception {
+<span class="nc" id="L49">            URL url = getClass().getResource(&quot;/version.txt&quot;);</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            if (url == null) {</span>
+<span class="nc" id="L51">                return new String[]{&quot;No version.txt file found in the classpath. Is examples.jar in the classpath?&quot;};</span>
+            }
+<span class="nc" id="L53">            Properties properties = new Properties();</span>
+<span class="nc" id="L54">            properties.load(url.openStream());</span>
+<span class="nc" id="L55">            return new String[]{</span>
+<span class="nc" id="L56">                    properties.getProperty(&quot;application&quot;) + &quot; &quot; + properties.getProperty(&quot;version&quot;)</span>
+            };
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
