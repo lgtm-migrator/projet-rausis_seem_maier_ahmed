@@ -23,7 +23,7 @@ import picocli.CommandLine.Option;
 
 public class Main implements Callable<Integer> {
 
-    @Option(names = {"-V", "-version"}, versionHelp = true, description = "Print version info and exit")
+    @Option(names = {"-V", "-version", "-v"}, versionHelp = true, description = "Print version info and exit")
     boolean versionRequested;
 
     @Override
