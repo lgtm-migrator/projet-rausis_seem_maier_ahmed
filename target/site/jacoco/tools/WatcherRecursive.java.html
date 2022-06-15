@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WatcherRecursive.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo :: Maven Plugin</a> &gt; <a href="index.source.html" class="el_package">tools</a> &gt; <span class="el_source">WatcherRecursive.java</span></div><h1>WatcherRecursive.java</h1><pre class="source lang-java linenums">package tools;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
+
+public class WatcherRecursive {
+
+    private String directoryPath;
+<span class="nc" id="L10">    private final WatchService watcher = FileSystems.getDefault().newWatchService();</span>
+
+    /**
+     * L'interface permet à la boucle while qui attend une modification sur un fichier
+     * de signaler cette modification en utilisatn la méthode change
+     */
+    public interface SignalChange{
+        void change(WatchKey key) throws InterruptedException;
+    }
+
+
+    /**
+     * Constructeur de la place avec le chemin du dossier à watch
+     * @param path le chemin absolue du dossier
+     */
+<span class="nc" id="L25">    public WatcherRecursive(String path) throws IOException {</span>
+<span class="nc" id="L26">        directoryPath = path;</span>
+<span class="nc" id="L27">        initWatcher();</span>
+<span class="nc" id="L28">    }</span>
+
+    /**
+     * Attend jusqu'au prochain event catch
+     * @return l'event catch
+     */
+    public WatchKey watch(SignalChange signal) throws InterruptedException {
+        WatchKey key;
+<span class="nc" id="L36">        System.out.println(&quot;Ecoute un changement de fichier dans &quot; + directoryPath);</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        while((key = watcher.take()) != null){</span>
+            //TODO: Signal 2 fois chaque modification mais je ne comprends pas pourquoi
+<span class="nc" id="L39">            signal.change(key);</span>
+<span class="nc" id="L40">            key.reset();</span>
+        }
+<span class="nc" id="L42">        return key;</span>
+    }
+
+    /**
+     * Permet d'initialiser tous les watchers sur les dossiers
+     * @throws IOException
+     */
+    private void initWatcher() throws IOException {
+<span class="nc" id="L50">        Path dir = Paths.get(directoryPath);</span>
+<span class="nc" id="L51">        dir.register(watcher,</span>
+                StandardWatchEventKinds.ENTRY_CREATE,
+                StandardWatchEventKinds.ENTRY_DELETE,
+                StandardWatchEventKinds.ENTRY_MODIFY);
+<span class="nc" id="L55">        initRecursiveWatcher(new File(directoryPath));</span>
+<span class="nc" id="L56">    }</span>
+
+    /**
+     * Permet d'initialiser de manière récursive tous les watchers sur les dossiers
+     * @param directory Le dossier en cours
+     * @throws IOException
+     */
+    private void initRecursiveWatcher(File directory) throws IOException {
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        for(File file : directory.listFiles()){</span>
+<span class="nc bnc" id="L65" title="All 4 branches missed.">            if(file.isDirectory() &amp;&amp; !file.getName().equals(&quot;build&quot;)){</span>
+<span class="nc" id="L66">                Path dir = Paths.get(file.getPath());</span>
+<span class="nc" id="L67">                dir.register(watcher,</span>
+                        StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.ENTRY_DELETE,
+                        StandardWatchEventKinds.ENTRY_MODIFY);
+<span class="nc" id="L71">                initRecursiveWatcher(file);</span>
+            }
+        }
+<span class="nc" id="L74">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
