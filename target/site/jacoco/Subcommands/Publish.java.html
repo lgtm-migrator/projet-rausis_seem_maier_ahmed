@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Publish.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo :: Maven Plugin</a> &gt; <a href="index.source.html" class="el_package">Subcommands</a> &gt; <span class="el_source">Publish.java</span></div><h1>Publish.java</h1><pre class="source lang-java linenums">package Subcommands;
+
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+import tools.FileManager;
+import tools.GitHelper;
+
+import java.io.File;
+import java.util.concurrent.Callable;
+
+@Command(name = &quot;publish&quot;, description = &quot;Publie le dossier build sur un répertoire git distant&quot;)
+<span class="nc" id="L13">public class Publish implements Callable&lt;Integer&gt; {</span>
+
+    @Parameters(index = &quot;0&quot;, description = &quot;Le chemin au dossier racine du projet (le dossier qui contient un dossier build)&quot;)
+    private String path;
+
+    @Option(names = {&quot;-c&quot;, &quot;--clear&quot;}, description = &quot;Supprime les informations enregistrées (lien au répo distant et crédentials&quot;)
+    boolean clear;
+
+    @Override public Integer call() {
+<span class="nc" id="L22">        File dir = new File(path + File.separator + &quot;Build&quot;);</span>
+<span class="nc bnc" id="L23" title="All 2 branches missed.">        if(!FileManager.fileExists(dir.getAbsolutePath())){</span>
+<span class="nc" id="L24">            System.out.println(&quot;Il n'y a pas de dossier build dans le dossier fournit&quot;);</span>
+<span class="nc" id="L25">            return 0;</span>
+        }
+        GitHelper git;
+        try{
+<span class="nc" id="L29">             git = new GitHelper(dir);</span>
+<span class="nc" id="L30">        } catch (Exception e){</span>
+<span class="nc" id="L31">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L32">            return 0;</span>
+<span class="nc" id="L33">        }</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        if(clear){</span>
+<span class="nc" id="L35">            git.delSaveRemoteUrlAndCredentials();</span>
+<span class="nc" id="L36">            return 0;</span>
+        }
+<span class="nc" id="L38">        git.publish();</span>
+<span class="nc" id="L39">        return 0;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

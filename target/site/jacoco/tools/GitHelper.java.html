@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GitHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo :: Maven Plugin</a> &gt; <a href="index.source.html" class="el_package">tools</a> &gt; <span class="el_source">GitHelper.java</span></div><h1>GitHelper.java</h1><pre class="source lang-java linenums">package tools;
+
+import org.eclipse.jgit.api.*;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Scanner;
+
+public class GitHelper {
+    private File directory;
+    private Git git;
+    private StoredConfig config;
+
+    /**
+     * Constructeur de la classe le répertoire à push sur le répo git distant
+     * (Dans notre cas le dossier build)
+     * @param directory le répertoire à push
+     */
+<span class="nc" id="L23">    public GitHelper(File directory) throws GitAPIException {</span>
+<span class="nc" id="L24">        this.directory = directory;</span>
+<span class="nc" id="L25">        git = Git.init().setDirectory(directory).call();</span>
+<span class="nc" id="L26">        config = git.getRepository().getConfig();</span>
+<span class="nc" id="L27">    }</span>
+
+    /**
+     * Permet de publier le répertoire sur le répo distant
+     * Si le répo n'a pas déjà été enregistré le demande à l'utilisateur
+     * Même chose pour les crédentials (le token)
+     * Ensuite publie sur le répo enregistré avec les crédentials enregistrés
+     * Si la publication ne fonctionne pas efface le répo et les crédentials enregistrés
+     */
+    public void publish(){
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if(!hasRemoteUrl()) askAndSaveRemoteUrl();</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        if(!hasCredentials()) askAndSaveCredentails();</span>
+
+        //Créer le commit et le push
+        try {
+<span class="nc" id="L42">            AddCommand add = git.add();</span>
+<span class="nc" id="L43">            add.addFilepattern(&quot;.&quot;).call();</span>
+<span class="nc" id="L44">            CommitCommand commit = git.commit();</span>
+<span class="nc" id="L45">            commit.setMessage(&quot;Automatique commit&quot;).call();</span>
+
+<span class="nc" id="L47">            PushCommand push = git.push();</span>
+<span class="nc" id="L48">            push.setCredentialsProvider(getCredentials());</span>
+<span class="nc" id="L49">            push.call();</span>
+<span class="nc" id="L50">        } catch (Exception e){</span>
+            //Si une erreur survient lors du push (poblème d'accès au répo)
+            //Delete les informations sauvegardées pour en redemander des nouvelles
+            //Lors du prochain publish de l'utilisateur
+<span class="nc" id="L54">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L55">            System.out.println(&quot;Une erreur est survenue lors de la publication&quot;);</span>
+<span class="nc" id="L56">            delSaveRemoteUrlAndCredentials();</span>
+<span class="nc" id="L57">        }</span>
+<span class="nc" id="L58">    }</span>
+
+    private CredentialsProvider getCredentials(){
+<span class="nc" id="L61">        String token = config.getString(&quot;credentials&quot;, &quot;token&quot;, &quot;token&quot;);</span>
+<span class="nc" id="L62">        return new UsernamePasswordCredentialsProvider(token, &quot;&quot;);</span>
+    }
+
+    /**
+     * Check si un répo distant est enregistré
+     * @return true si un répo est enregistré
+     */
+    private boolean hasRemoteUrl(){
+<span class="nc" id="L70">        String url = config.getString(&quot;remote&quot;, &quot;origin&quot;, &quot;url&quot;);</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        return url != null;</span>
+    }
+
+    /**
+     * Check si des crédentials sont enregistrés
+     * @return true si des crédentials sont enregistrés
+     */
+    private boolean hasCredentials(){
+<span class="nc" id="L79">        String token = config.getString(&quot;credentials&quot;, &quot;token&quot;, &quot;token&quot;);</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        return token != null;</span>
+    }
+
+    /**
+     * Demande à l'utilisateur le répo distant et le sotck dans le répertoire .git
+     */
+    private void askAndSaveRemoteUrl(){
+<span class="nc" id="L87">        Scanner sc= new Scanner(System.in);</span>
+<span class="nc" id="L88">        System.out.print(&quot;Entrer l'url du répertoire git distant: &quot;);</span>
+<span class="nc" id="L89">        String str= sc.nextLine();</span>
+<span class="nc" id="L90">        config.setString(&quot;remote&quot;, &quot;origin&quot;, &quot;url&quot;, str);</span>
+        try {
+<span class="nc" id="L92">            config.save();</span>
+<span class="nc" id="L93">        } catch (Exception e){}</span>
+<span class="nc" id="L94">    }</span>
+
+    /**
+     * Demande à l'utilisateur les crédentials et les sotck dans le répertoire .git
+     * (Demande uniquement le token)
+     */
+    private void askAndSaveCredentails(){
+<span class="nc" id="L101">        Scanner sc= new Scanner(System.in);</span>
+<span class="nc" id="L102">        System.out.print(&quot;Entrer le token pour s'authentifier: &quot;);</span>
+<span class="nc" id="L103">        String str= sc.nextLine();</span>
+<span class="nc" id="L104">        config.setString(&quot;credentials&quot;, &quot;token&quot;, &quot;token&quot;, str);</span>
+        try {
+<span class="nc" id="L106">            config.save();</span>
+<span class="nc" id="L107">        } catch (Exception e){}</span>
+<span class="nc" id="L108">    }</span>
+
+    /**
+     * Suprpime les crédentials et l'url du répo enregistrés
+     */
+    public void delSaveRemoteUrlAndCredentials(){
+<span class="nc" id="L114">        delSavedCredentials();</span>
+<span class="nc" id="L115">        delSavedRemoteUrl();</span>
+<span class="nc" id="L116">    }</span>
+
+    /**
+     * Supprime l'url du répo enregistré
+     */
+    private void delSavedRemoteUrl(){
+<span class="nc" id="L122">        config.setString(&quot;remote&quot;, &quot;origin&quot;, &quot;url&quot;, null);</span>
+        try {
+<span class="nc" id="L124">            config.save();</span>
+<span class="nc" id="L125">        } catch (Exception e){}</span>
+<span class="nc" id="L126">    }</span>
+
+    /**
+     * Supprime les crédentials enregistrés
+     */
+    private void delSavedCredentials(){
+<span class="nc" id="L132">        config.setString(&quot;credentials&quot;, &quot;token&quot;, &quot;token&quot;, null);</span>
+        try {
+<span class="nc" id="L134">            config.save();</span>
+<span class="nc" id="L135">        } catch (Exception e){}</span>
+<span class="nc" id="L136">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
