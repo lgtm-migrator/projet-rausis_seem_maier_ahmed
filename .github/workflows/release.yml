@@ -2,45 +2,37 @@
 name: "tagged-release"
 env:
   APP_NAME: static
-
 on:
   push:
     tags:
       - "v*"
-      
+
 jobs:
   tagged-release:
     name: "Tagged Release"
     runs-on: "ubuntu-latest"
-
     steps:
       - name: Checkout current repo
         uses: actions/checkout@v3
-             
+
       - name: Build package and generate javadoc
         run: mvn clean javadoc:javadoc package install
-      
-      
+
+
       - name: Copy JARs to working directory
         run: cp target/*.jar .
-      
 
       - name: Zip javadoc files
         run: zip -r javadoc.zip target/site/apidocs/
-        
-        
-      - name: Zip site exemple
-        run: zip -r monSite.zip monSite
-      
-      
+
+
       - name: Upload files to release
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          automatic_release_tag: Release
+          automatic_release_tag: Release2
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: |
-            javadoc.zip 
-            monSite.zip
-            LICENSE 
+            LICENSE
             *.jar
+            javadoc.zip
