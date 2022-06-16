@@ -133,9 +133,8 @@ Projet.jar
 ```
 
 ### Remarque
-Vous pouvez utilisez le dossier nommé monSite fournis dans la release du projet
-sous format zip, il suffit de le télécharger et de le dézipper et vous aurez tous
-les éléments qui peuvent être utilisé par build directement.
+Vous pouvez prendre exemple sur le dossier nommé monSite qui se trouve à la racine du projet
+afin de tester le fonctionnement du générateur.
 
 
 ## Utiliser statique en tant que commande (développement)
