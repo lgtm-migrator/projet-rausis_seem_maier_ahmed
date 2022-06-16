@@ -7,7 +7,7 @@ import tools.FileManager;
 import java.io.File;
 import java.util.concurrent.Callable;
 
-@Command(name = "clean", description = "Clean")
+@Command(name = "clean", description = "Permet la destruction du site statique créé")
 public class Clean implements Callable<Integer> {
 
     @Parameters(index = "0", description = "The path to the folder.")

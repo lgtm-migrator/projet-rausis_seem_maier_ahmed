@@ -12,7 +12,7 @@ import tools.FileManager;
 
 import java.util.concurrent.Callable;
 
-@Command(name = "init", description = "init")
+@Command(name = "init", description = "Initialise le minimum nécessaire pour configurer une page statique")
 public class Init implements Callable<Integer> {
 
     @CommandLine.Parameters(index = "0", description = "The path to the folder.")

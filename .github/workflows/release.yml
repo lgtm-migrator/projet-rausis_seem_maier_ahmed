@@ -29,8 +29,8 @@ jobs:
         run: zip -r javadoc.zip target/site/apidocs/
         
         
-      - name: Zip all files together
-        run: zip -r Release.zip javadoc.zip LICENSE *.jar javadoc.zip
+      - name: Zip site exemple
+        run: zip -r monSite.zip monSite
       
       
       - name: Upload files to release
@@ -41,5 +41,6 @@ jobs:
           prerelease: false
           files: |
             javadoc.zip 
+            monSite.zip
             LICENSE 
             *.jar
