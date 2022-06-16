@@ -11,10 +11,9 @@ import picocli.CommandLine.IVersionProvider;
 import picocli.CommandLine.Option;
 
 @Command(name="Main",
-         description = "C'est un site statique",
+         description = "C'est un site statique, voici les differentes commandes disponible",
          subcommands = {
                         Build.class,
-                        New.class,
                          Init.class,
                          Clean.class,
                          Publish.class,
@@ -28,7 +27,9 @@ public class Main implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        System.out.println("Mesage au démarrage");
+        System.out.println("Bienvenue sur le générateur de site statique du cours de dil.\n" +
+                           "Pour connaître les commandes disponibles, veuillez soit vous référer au README,\n" +
+                           "soit entrer un argument random afin de voir la liste des commandes disponibles.");
         return 0;
     }
 

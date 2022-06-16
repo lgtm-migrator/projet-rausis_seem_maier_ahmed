@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
 
 import tools.FileManager;
 
-@Command(name = "build", description = "Build")
+@Command(name = "build", description = "Permet la création d'un site statique à partir de template")
 public class Build implements Callable<Integer> {
 
     @Parameters(index = "0", description = "The path to the folder.")
